@@ -1,0 +1,21 @@
+.modalUserMessage {
+    color: red;
+}
+
+#mainContent {
+    margin: 14px;
+}
+
+#datastoreContent {
+    display: none;
+}
+
+#appTable {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+#datastoreTable {
+    width: 100%;
+    margin-bottom: 8px;
+}
