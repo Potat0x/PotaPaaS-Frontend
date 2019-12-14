@@ -1,9 +1,5 @@
 const url = "http://localhost:8080/datastore"
-const authToken = ""
-function createDatastoreRequest(createDatastoreRequest, onSuccess, onError) {
-    console.log("datastoreService: create datastore: " + JSON.stringify(createDatastoreRequest))
-    return postRequest(JSON.stringify(createDatastoreRequest), onSuccess, onError)
-}
+const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEiLCJleHAiOjE1NzYzOTY1Mjl9.GrUyvWNFjAamKd-qKETnkdLddD6GWPp3v9-VTWaMOBqS81EUWyASVzDdOKagpKmL43VpQMCpu4ljR40CFfNNIg"
 
 function getDatastore(datastoreRequest) {
 }

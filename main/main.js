@@ -1,43 +1,43 @@
 function initDatastoreModal() {
-  clearDatastoreModalMessage()
-  setDatastoreModalFooterButtonsDisabled(false)
-  setDatastoreModalSpinnerVisible(false)
+  clearModalMessage("datastoreModalMessage")
+  setModalFooterButtonsDisabled("datastoreModalFooter", false)
+  setSpinnerVisible("createDatastoreModalSpinner", false)
   console.log("INIT DATASTORE")
 }
 
 function createDatastoreOnclick() {
   console.log("create datastore")
 
-  setDatastoreModalSpinnerVisible(true)
-  clearDatastoreModalMessage()
-  setDatastoreModalFooterButtonsDisabled(true)
+  setSpinnerVisible("createDatastoreModalSpinner", true)
+  clearModalMessage("datastoreModalMessage")
+  setModalFooterButtonsDisabled("datastoreModalFooter", true)
 
-  createDatastoreRequest(createDatastoreRequestBody(), showSuccessMessage, showErrorMessage)
+  postRequest(createDatastoreRequestBody(), showSuccessMessage, showErrorMessage)
 }
 
 function createDatastoreRequestBody() {
-  return {
+  return JSON.stringify({
     name: document.getElementById("datastore-name").value,
     type: document.getElementById("datastore-type").value
-  }
+  });
 }
 
 function showSuccessMessage(json) {
   console.log("showSuccessMessage: " + json)
-  setDatastoreModalMessage("Datastore created!", "success")
-  setDatastoreModalSpinnerVisible(false)
+  setModalMessage("datastoreModalMessage", "Datastore created!", "success")
+  setSpinnerVisible("createDatastoreModalSpinner", false)
   setTimeout(() => $('#newDatastoreModal').modal('hide'), 2000)
 }
 
 function showErrorMessage(message) {
   console.log("onerrormsg")
-  setDatastoreModalMessage(message, "error")
-  setDatastoreModalSpinnerVisible(false)
-  setDatastoreModalFooterButtonsDisabled(false)
+  setModalMessage("datastoreModalMessage", message, "error")
+  setSpinnerVisible("createDatastoreModalSpinner", false)
+  setModalFooterButtonsDisabled("datastoreModalFooter", false)
 }
 
-function setDatastoreModalFooterButtonsDisabled(disabled) {
-  const footer = document.getElementById("datastoreModalFooter")
+function setModalFooterButtonsDisabled(moodalFooterId, disabled) {
+  const footer = document.getElementById(moodalFooterId)
   const buttons = footer.getElementsByTagName("button")
   for (let button of buttons) {
     if (disabled) {
@@ -48,24 +48,24 @@ function setDatastoreModalFooterButtonsDisabled(disabled) {
   }
 }
 
-function setDatastoreModalMessage(message, style) {
-  const datastoreModalMessage = document.getElementById("datastoreModalMessage")
+function setModalMessage(messageElementId, message, style) {
+  const modalMessage = document.getElementById(messageElementId)
   if (style === "success") {
-    datastoreModalMessage.style.color = "lime"
+    modalMessage.style.color = "lime"
   } else if (style === "error") {
-    datastoreModalMessage.style.color = "red"
+    modalMessage.style.color = "red"
   } else {
-    datastoreModalMessage.style.color = "black"
+    modalMessage.style.color = "black"
   }
-  datastoreModalMessage.innerHTML = message
+  modalMessage.innerHTML = message
 }
 
-function clearDatastoreModalMessage() {
-  setDatastoreModalMessage("")
+function clearModalMessage(messageElementId) {
+  setModalMessage(messageElementId, "")
 }
 
-function setDatastoreModalSpinnerVisible(visible) {
-  document.getElementById("createDatastoreModalSpinner").style.display = visible ? "block" : "none"
+function setSpinnerVisible(spinnerId, visible) {
+  document.getElementById(spinnerId).style.display = visible ? "block" : "none"
 }
 
 function deleteDatastoreOnclick() {
@@ -74,7 +74,6 @@ function deleteDatastoreOnclick() {
 
 function createAppOnclick() {
   console.log("create app")
-  deleteAppOnclick()
 }
 
 function redeployAppOnclick() {
