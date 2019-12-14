@@ -1,3 +1,21 @@
+const datastoreUrl = "http://localhost:8080/datastore"
+
+function setDropdownItemsInNavbar(dropdownListId, items) {
+  let dropdownListHtml = ""
+  for (let item of items) {
+    dropdownListHtml += `<a class="dropdown-item" href="#${item.uuid}">${item.name}</a>\n`
+  }
+  document.getElementById(dropdownListId).innerHTML = dropdownListHtml
+}
+
+function setDatastoreDropdownItems(items) {
+  setDropdownItemsInNavbar("datastore-dropdown-list", items)
+}
+
+function initDatastoreDropdown() {
+  getRequest(datastoreUrl, setDatastoreDropdownItems, () => console.log("Request for list of datastores failed"))
+}
+
 function initDatastoreModal() {
   clearModalMessage("datastoreModalMessage")
   setModalFooterButtonsDisabled("datastoreModalFooter", false)
@@ -12,14 +30,14 @@ function createDatastoreOnclick() {
   clearModalMessage("datastoreModalMessage")
   setModalFooterButtonsDisabled("datastoreModalFooter", true)
 
-  postRequest(createDatastoreRequestBody(), showSuccessMessage, showErrorMessage)
+  postRequest(datastoreUrl, createDatastoreRequestBody(), showSuccessMessage, showErrorMessage)
 }
 
 function createDatastoreRequestBody() {
   return JSON.stringify({
     name: document.getElementById("datastore-name").value,
     type: document.getElementById("datastore-type").value
-  });
+  })
 }
 
 function showSuccessMessage(json) {

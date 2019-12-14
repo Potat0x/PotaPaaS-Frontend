@@ -1,5 +1,4 @@
-const url = "http://localhost:8080/datastore"
-const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEiLCJleHAiOjE1NzYzOTY1Mjl9.GrUyvWNFjAamKd-qKETnkdLddD6GWPp3v9-VTWaMOBqS81EUWyASVzDdOKagpKmL43VpQMCpu4ljR40CFfNNIg"
+const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEzIiwiZXhwIjoxNTc2NjUyNTI5fQ.Tf72KecDs1qgCcTfhfxboq4bgbZ_HwhUWhKFkpAUJBVdUfWQ1KDjsqA4RfYpYroOTEe0ioffutUpo5OrvANLzg"
 
 function getDatastore(datastoreRequest) {
 }
@@ -15,9 +14,17 @@ function createDatastoreErrorMessage(errorJson) {
     return message + validRequestExample
 }
 
-function postRequest(requestBody, onSuccess, onError) {
+function getRequest(url, onSuccess, onError) {
+    request(url, "get", null, onSuccess, onError)
+}
+
+function postRequest(url, requestBody, onSuccess, onError) {
+    request(url, "post", requestBody, onSuccess, onError)
+}
+
+function request(url, method, requestBody, onSuccess, onError) {
     return fetch(url, {
-        method: "post",
+        method: method,
         body: requestBody,
         mode: 'cors',
         headers: new Headers({

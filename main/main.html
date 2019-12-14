@@ -49,12 +49,11 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="datastoreDropdownMenuLink">
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newDatastoreModal"
-                            onclick="initDatastoreModal()">Create
-                            new</a>
+                            onclick="initDatastoreModal()">Create new
+                        </a>
                         <div class="dropdown-divider"></div>
                         <div id="datastore-dropdown-list">
-                            <a class="dropdown-item" href="#">datastore-1</a>
-                            <a class="dropdown-item" href="#">datastore-2</a>
+                            <!-- <a class="dropdown-item" href="#datastore-uuid">datastore-name</a> -->
                         </div>
                     </div>
                 </li>
@@ -270,6 +269,9 @@
         crossorigin="anonymous"></script>
     <script src="main.js"></script>
     <script src="datastoreService.js"></script>
+    <script>
+        initDatastoreDropdown()
+    </script>
 </body>
 
 </html>
