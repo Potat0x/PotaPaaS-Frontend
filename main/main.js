@@ -1,4 +1,6 @@
-const datastoreUrl = "http://localhost:8080/datastore"
+const mainUrl = "http://localhost:8080"
+const datastoreUrl = mainUrl + "/datastore"
+const appUrl = mainUrl + "/app"
 
 function updateWindowLocation(datastoreUuid) {
   window.location.href = datastoreUuid
@@ -13,9 +15,14 @@ function formatDatabaseTypeName(databaseType) {
   }[databaseType]
 }
 
+function formatAppTypeName(databaseType) {
+  return {
+    "NODEJS": "Node.js",
+  }[databaseType]
+}
+
 function setElementContent(elementId, innerHtml) {
   document.getElementById(elementId).innerHTML = innerHtml
-
 }
 
 function fillDatastoreInfo(datastoreResponseDto) {
@@ -36,6 +43,40 @@ function fillDatastoreInfo(datastoreResponseDto) {
   setElementVisible("mainContentErrorMessage", false)
 }
 
+function createHtmlLink(href) {
+  return `<a href="${href}">${href}</a>`
+}
+
+function createHtmlLinkToGithubBranch(repoUrl, branch) {
+  const urlToBranch = repoUrl + "/tree/" + branch
+  return `<a href="${urlToBranch}">${branch}</a>`
+}
+
+function mapBooleanStringToCustomString(boolVal, trueMapping, falseMapping) {
+  return {
+    "true": trueMapping,
+    "false": falseMapping,
+  }[boolVal]
+}
+
+function fillAppInfo(appResponseDto) {
+  setElementContent("appResponseName", "App " + appResponseDto.name)
+  setElementContent("appResponseUuid", appResponseDto.appUuid)
+  setElementContent("appResponseType", formatAppTypeName(appResponseDto.type))
+  setElementContent("appResponseCreatedAt", new Date(appResponseDto.createdAt).toLocaleString("PL"))
+  setElementContent("appResponseSourceRepoUrl", createHtmlLink(appResponseDto.sourceRepoUrl))
+  setElementContent("appResponseSourceBranchName", createHtmlLinkToGithubBranch(appResponseDto.sourceRepoUrl, appResponseDto.sourceBranchName))
+  setElementContent("appResponseSourceCommitHash", appResponseDto.commitHash)
+  setElementContent("appResponseAutodeployEnabled", mapBooleanStringToCustomString(appResponseDto.autodeployEnabled, "enabled", "disabled"))
+  setElementContent("appResponseStatus", appResponseDto.status)
+
+  const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}">${appResponseDto.datastoreUuid}</a>`;
+  setElementContent("appResponseDatastoreUuid", htmlLinkToDatastore)
+
+  setElementVisible("appContent", true)
+  setElementVisible("mainContentErrorMessage", false)
+}
+
 function setMainContentErrorMessage(message) {
   document.getElementById("mainContentErrorMessage").innerHTML = message;
   setElementVisible("mainContentErrorMessage", true)
@@ -45,20 +86,32 @@ function initDatastoreInfo(datastoreUuid) {
   getRequest(datastoreUrl + "/" + datastoreUuid, fillDatastoreInfo, setMainContentErrorMessage)
 }
 
-function setDropdownItemsInNavbar(dropdownListId, items) {
+function initAppInfo(appUuid) {
+  getRequest(appUrl + "/" + appUuid, fillAppInfo, setMainContentErrorMessage)
+}
+
+function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
   let dropdownListHtml = ""
   for (let item of items) {
-    dropdownListHtml += `<a class="dropdown-item" href="#datastore=${item.uuid}" onclick="updateWindowLocation('#datastore=${item.uuid}')">${item.name}</a>\n`
+    dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="updateWindowLocation('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
   }
   document.getElementById(dropdownListId).innerHTML = dropdownListHtml
 }
 
 function setDatastoreDropdownItems(items) {
-  setDropdownItemsInNavbar("datastore-dropdown-list", items)
+  setDropdownItemsInNavbar("datastore", "datastore-dropdown-list", items)
+}
+
+function setAppDropdownItems(items) {
+  setDropdownItemsInNavbar("app", "app-dropdown-list", items)
 }
 
 function initDatastoreDropdown() {
   getRequest(datastoreUrl, setDatastoreDropdownItems, () => console.log("Request for list of datastores failed"))
+}
+
+function initAppDropdown() {
+  getRequest(appUrl, setAppDropdownItems, () => console.log("Request for list of apps failed"))
 }
 
 function initDatastoreModal() {

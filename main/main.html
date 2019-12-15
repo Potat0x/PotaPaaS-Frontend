@@ -35,8 +35,7 @@
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newAppModal">Create new</a>
                         <div class="dropdown-divider"></div>
                         <div id="app-dropdown-list">
-                            <a class="dropdown-item" href="#">app-1</a>
-                            <a class="dropdown-item" href="#">app-2</a>
+                            <!-- <a class="dropdown-item" href="#app-uuid">app-name</a> -->
                         </div>
                     </div>
                 </li>
@@ -70,7 +69,7 @@
         <h2 id="mainContentErrorMessage">error message here</h2>
 
         <div id="appContent">
-            <h2>my-app-123</h2>
+            <h2 id="appResponseName">my-app-123</h2>
             <table id="appTable">
                 <tr>
                     <th>UUID</th>
@@ -272,6 +271,7 @@
     <script src="datastoreService.js"></script>
     <script>
         initDatastoreDropdown()
+        initAppDropdown()
         setElementVisible("datastoreContent", false)
         const currentPageUrl = window.location.href;
         console.log("window.location.href = " + currentPageUrl)
@@ -280,6 +280,11 @@
             const datastoreUrl = currentPageUrl.substr(pos + "#datastore=".length);
             console.log("datastoreUrl = " + datastoreUrl)
             initDatastoreInfo(datastoreUrl)
+        } else if (currentPageUrl.includes("#app=")) {
+            let pos = currentPageUrl.indexOf("#app=")
+            const appUrl = currentPageUrl.substr(pos + "#app=".length);
+            console.log("appUrl = " + appUrl)
+            initAppInfo(appUrl)
         }
     </script>
 </body>
