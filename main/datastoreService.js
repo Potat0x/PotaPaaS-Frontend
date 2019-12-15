@@ -1,4 +1,4 @@
-const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEzIiwiZXhwIjoxNTc2NjUyNTI5fQ.Tf72KecDs1qgCcTfhfxboq4bgbZ_HwhUWhKFkpAUJBVdUfWQ1KDjsqA4RfYpYroOTEe0ioffutUpo5OrvANLzg"
+const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEzIiwiZXhwIjoxNTc2NzI1MjU5fQ.SdNfUZcyaYErgn_1ADPro-7j8zU_wF9TLWe44sXR3UOuTHl_oJV6Xaw1IIHTHYoyuJ58t0xu_0YpvFL0RnZNfw"
 
 function getDatastore(datastoreRequest) {
 }
@@ -8,9 +8,12 @@ function deleteDatastore(datastoreRequest) {
 
 function createDatastoreErrorMessage(errorJson) {
     let message = "Error: " + errorJson.message
-    let validRequestExample = "<br>Valid request example:<br>"
-        + "name: " + errorJson.validRequestDtoExample.name + "<br>"
-        + "type: " + errorJson.validRequestDtoExample.type
+    let validRequestExample = "";
+    if (errorJson.validRequestDtoExample != null && errorJson.validRequestDtoExample != undefined) {
+        validRequestExample = "<br>Valid request example:<br>"
+            + "name: " + errorJson.validRequestDtoExample.name + "<br>"
+            + "type: " + errorJson.validRequestDtoExample.type
+    }
     return message + validRequestExample
 }
 
@@ -32,7 +35,7 @@ function request(url, method, requestBody, onSuccess, onError) {
             "Content-Type": "application/json"
         })
     }).then(response => {
-        console.log("fetch response: " + response.status + JSON.stringify(response))
+        console.log("fetch response: " + response.status + JSON.stringify(response) + " for " + method + " " + url)
         if (response.status === 200 || response.status === 201) {
             return response.json()
         } else if (response.status === 401 || response.status === 403) {

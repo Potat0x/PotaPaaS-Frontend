@@ -2,7 +2,7 @@
     margin: 14px;
 }
 
-#datastoreContent {
+#appContent {
     display: none;
 }
 
@@ -14,4 +14,8 @@
 #datastoreTable {
     width: 100%;
     margin-bottom: 8px;
+}
+
+#noAttachedApps{
+    color: rgb(71, 71, 71)
 }

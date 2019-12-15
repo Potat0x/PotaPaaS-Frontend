@@ -1,9 +1,54 @@
 const datastoreUrl = "http://localhost:8080/datastore"
 
+function updateWindowLocation(datastoreUuid) {
+  window.location.href = datastoreUuid
+  window.location.reload(false)
+}
+
+function formatDatabaseTypeName(databaseType) {
+  return {
+    "POSTGRESQL": "PostgreSQL",
+    "MYSQL": "MySQL",
+    "MARIADB": "MariaDB"
+  }[databaseType]
+}
+
+function setElementContent(elementId, innerHtml) {
+  document.getElementById(elementId).innerHTML = innerHtml
+
+}
+
+function fillDatastoreInfo(datastoreResponseDto) {
+  setElementContent("datastoreResponseName", "Datastore " + datastoreResponseDto.name)
+  setElementContent("datastoreResponseUuid", datastoreResponseDto.uuid)
+  setElementContent("datastoreResponseType", formatDatabaseTypeName(datastoreResponseDto.type))
+  setElementContent("datastoreResponseCreatedAt", new Date(datastoreResponseDto.createdAt).toLocaleString("PL"))
+  setElementContent("datastoreResponseStatus", datastoreResponseDto.status)
+
+  let attachedAppsHtml = "";
+  for (let app of datastoreResponseDto.attachedApps) {
+    attachedAppsHtml += `<li><a href="#app=${app}">${app}</a></li>\n`
+  }
+  setElementContent("datastoreResponseAttachedApps", attachedAppsHtml)
+
+  setElementVisible("noAttachedApps", datastoreResponseDto.attachedApps.length == 0)
+  setElementVisible("datastoreContent", true)
+  setElementVisible("mainContentErrorMessage", false)
+}
+
+function setMainContentErrorMessage(message) {
+  document.getElementById("mainContentErrorMessage").innerHTML = message;
+  setElementVisible("mainContentErrorMessage", true)
+}
+
+function initDatastoreInfo(datastoreUuid) {
+  getRequest(datastoreUrl + "/" + datastoreUuid, fillDatastoreInfo, setMainContentErrorMessage)
+}
+
 function setDropdownItemsInNavbar(dropdownListId, items) {
   let dropdownListHtml = ""
   for (let item of items) {
-    dropdownListHtml += `<a class="dropdown-item" href="#${item.uuid}">${item.name}</a>\n`
+    dropdownListHtml += `<a class="dropdown-item" href="#datastore=${item.uuid}" onclick="updateWindowLocation('#datastore=${item.uuid}')">${item.name}</a>\n`
   }
   document.getElementById(dropdownListId).innerHTML = dropdownListHtml
 }
@@ -19,14 +64,14 @@ function initDatastoreDropdown() {
 function initDatastoreModal() {
   clearModalMessage("datastoreModalMessage")
   setModalFooterButtonsDisabled("datastoreModalFooter", false)
-  setSpinnerVisible("createDatastoreModalSpinner", false)
+  setElementVisible("createDatastoreModalSpinner", false)
   console.log("INIT DATASTORE")
 }
 
 function createDatastoreOnclick() {
   console.log("create datastore")
 
-  setSpinnerVisible("createDatastoreModalSpinner", true)
+  setElementVisible("createDatastoreModalSpinner", true)
   clearModalMessage("datastoreModalMessage")
   setModalFooterButtonsDisabled("datastoreModalFooter", true)
 
@@ -43,14 +88,14 @@ function createDatastoreRequestBody() {
 function showSuccessMessage(json) {
   console.log("showSuccessMessage: " + json)
   setModalMessage("datastoreModalMessage", "Datastore created!", "success")
-  setSpinnerVisible("createDatastoreModalSpinner", false)
+  setElementVisible("createDatastoreModalSpinner", false)
   setTimeout(() => $('#newDatastoreModal').modal('hide'), 2000)
 }
 
 function showErrorMessage(message) {
   console.log("onerrormsg")
   setModalMessage("datastoreModalMessage", message, "error")
-  setSpinnerVisible("createDatastoreModalSpinner", false)
+  setElementVisible("createDatastoreModalSpinner", false)
   setModalFooterButtonsDisabled("datastoreModalFooter", false)
 }
 
@@ -82,7 +127,7 @@ function clearModalMessage(messageElementId) {
   setModalMessage(messageElementId, "")
 }
 
-function setSpinnerVisible(spinnerId, visible) {
+function setElementVisible(spinnerId, visible) {
   document.getElementById(spinnerId).style.display = visible ? "block" : "none"
 }
 
