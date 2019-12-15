@@ -32,7 +32,7 @@ function fillDatastoreInfo(datastoreResponseDto) {
   setElementContent("datastoreResponseCreatedAt", new Date(datastoreResponseDto.createdAt).toLocaleString("PL"))
   setElementContent("datastoreResponseStatus", datastoreResponseDto.status)
 
-  let attachedAppsHtml = "";
+  let attachedAppsHtml = ""
   for (let app of datastoreResponseDto.attachedApps) {
     attachedAppsHtml += `<li><a href="#app=${app}">${app}</a></li>\n`
   }
@@ -70,15 +70,15 @@ function fillAppInfo(appResponseDto) {
   setElementContent("appResponseAutodeployEnabled", mapBooleanStringToCustomString(appResponseDto.autodeployEnabled, "enabled", "disabled"))
   setElementContent("appResponseStatus", appResponseDto.status)
 
-  const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}">${appResponseDto.datastoreUuid}</a>`;
-  setElementContent("appResponseDatastoreUuid", htmlLinkToDatastore)
+  const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}">${appResponseDto.datastoreUuid}</a>`
+  setElementContent("appResponseDatastoreUuid", appResponseDto.datastoreUuid != null ? htmlLinkToDatastore : "none")
 
   setElementVisible("appContent", true)
   setElementVisible("mainContentErrorMessage", false)
 }
 
 function setMainContentErrorMessage(message) {
-  document.getElementById("mainContentErrorMessage").innerHTML = message;
+  document.getElementById("mainContentErrorMessage").innerHTML = message
   setElementVisible("mainContentErrorMessage", true)
 }
 
@@ -121,6 +121,13 @@ function initDatastoreModal() {
   console.log("INIT DATASTORE")
 }
 
+function initAppModal() {
+  clearModalMessage("appModalMessage")
+  setModalFooterButtonsDisabled("appModalFooter", false)
+  setElementVisible("createAppModalSpinner", false)
+  console.log("INIT APP")
+}
+
 function createDatastoreOnclick() {
   console.log("create datastore")
 
@@ -128,7 +135,7 @@ function createDatastoreOnclick() {
   clearModalMessage("datastoreModalMessage")
   setModalFooterButtonsDisabled("datastoreModalFooter", true)
 
-  postRequest(datastoreUrl, createDatastoreRequestBody(), showSuccessMessage, showErrorMessage)
+  postRequest(datastoreUrl, createDatastoreRequestBody(), showDatastoreModalSuccessMessage, showDatastoreModalErrorMessage)
 }
 
 function createDatastoreRequestBody() {
@@ -138,18 +145,51 @@ function createDatastoreRequestBody() {
   })
 }
 
-function showSuccessMessage(json) {
-  console.log("showSuccessMessage: " + json)
-  setModalMessage("datastoreModalMessage", "Datastore created!", "success")
-  setElementVisible("createDatastoreModalSpinner", false)
-  setTimeout(() => $('#newDatastoreModal').modal('hide'), 2000)
+function nullIfEmpty(string) {
+  return string === "" ? null : string
 }
 
-function showErrorMessage(message) {
-  console.log("onerrormsg")
-  setModalMessage("datastoreModalMessage", message, "error")
-  setElementVisible("createDatastoreModalSpinner", false)
-  setModalFooterButtonsDisabled("datastoreModalFooter", false)
+function createAppRequestBody() {
+  return JSON.stringify({
+    name: document.getElementById("app-name").value,
+    type: document.getElementById("app-type").value,
+    sourceRepoUrl: document.getElementById("app-sourceRepoUrl").value,
+    sourceBranchName: document.getElementById("app-sourceBranchName").value,
+    autodeployEnabled: document.getElementById("app-autodeployEnabled").checked,
+    commitHash: nullIfEmpty(document.getElementById("app-commitHash").value),
+    datastoreUuid: nullIfEmpty(document.getElementById("app-datastoreUuid").value),
+  })
+}
+
+function showModalSuccessMessage(json, modalId, messageId, message, spinnerId) {
+  console.log("showDatastoreSuccessMessage: " + json)
+  setModalMessage(messageId, message, "success")
+  setElementVisible(spinnerId, false)
+  setTimeout(() => $("#" + modalId).modal("hide"), 2000)
+}
+
+function showModalErrorMessage(message, messageId, spinnerId, footerId) {
+  console.log("onerrormsg datastore " + message)
+  const formattedeMessage = message.replace(/\n/g, "<br>")
+  setModalMessage(messageId, formattedeMessage, "error")
+  setElementVisible(spinnerId, false)
+  setModalFooterButtonsDisabled(footerId, false)
+}
+
+function showDatastoreModalSuccessMessage(json) {
+  showModalSuccessMessage(json, "newDatastoreModal", "datastoreModalMessage", "Datastore created!", "createDatastoreModalSpinner")
+}
+
+function showDatastoreModalErrorMessage(message) {
+  showModalErrorMessage(message, "datastoreModalMessage", "createDatastoreModalSpinner", "datastoreModalFooter")
+}
+
+function showAppModalSuccessMessage(json) {
+  showModalSuccessMessage(json, "newAppModal", "appModalMessage", "App created!", "createAppModalSpinner")
+}
+
+function showAppModalErrorMessage(message) {
+  showModalErrorMessage(message, "appModalMessage", "createAppModalSpinner", "appModalFooter")
 }
 
 function setModalFooterButtonsDisabled(moodalFooterId, disabled) {
@@ -190,6 +230,12 @@ function deleteDatastoreOnclick() {
 
 function createAppOnclick() {
   console.log("create app")
+
+  setElementVisible("createAppModalSpinner", true)
+  clearModalMessage("appModalMessage")
+  setModalFooterButtonsDisabled("appModalFooter", true)
+
+  postRequest(appUrl, createAppRequestBody(), showAppModalSuccessMessage, showAppModalErrorMessage)
 }
 
 function redeployAppOnclick() {

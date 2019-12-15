@@ -1,22 +1,5 @@
 const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEzIiwiZXhwIjoxNTc2NzI1MjU5fQ.SdNfUZcyaYErgn_1ADPro-7j8zU_wF9TLWe44sXR3UOuTHl_oJV6Xaw1IIHTHYoyuJ58t0xu_0YpvFL0RnZNfw"
 
-function getDatastore(datastoreRequest) {
-}
-
-function deleteDatastore(datastoreRequest) {
-}
-
-function createDatastoreErrorMessage(errorJson) {
-    let message = "Error: " + errorJson.message
-    let validRequestExample = "";
-    if (errorJson.validRequestDtoExample != null && errorJson.validRequestDtoExample != undefined) {
-        validRequestExample = "<br>Valid request example:<br>"
-            + "name: " + errorJson.validRequestDtoExample.name + "<br>"
-            + "type: " + errorJson.validRequestDtoExample.type
-    }
-    return message + validRequestExample
-}
-
 function getRequest(url, onSuccess, onError) {
     request(url, "get", null, onSuccess, onError)
 }
@@ -43,7 +26,7 @@ function request(url, method, requestBody, onSuccess, onError) {
         } else if (response.status >= 400 && response.status < 500) {
             return response.json()
                 .then(errorJson =>
-                    Promise.reject(createDatastoreErrorMessage(errorJson))
+                    Promise.reject(buildErrorMessage(errorJson))
                 )
         } else {
             return Promise.reject("Server error: " + response.status)
@@ -56,4 +39,16 @@ function request(url, method, requestBody, onSuccess, onError) {
         console.error("request error:" + err)
         onError(err)
     })
+}
+
+function buildErrorMessage(errorJson) {
+    let message = "Error: " + errorJson.message
+    let validRequestExample = "";
+    if (errorJson.validRequestDtoExample != null && errorJson.validRequestDtoExample != undefined) {
+        validRequestExample = "<br><br>Valid request example:<br>"
+        Object.keys(errorJson.validRequestDtoExample).forEach(function (key, index) {
+            validRequestExample += key + ": " + errorJson.validRequestDtoExample[key] + "<br>"
+        });
+    }
+    return message + validRequestExample
 }
