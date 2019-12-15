@@ -32,8 +32,8 @@
                         Apps
                     </a>
                     <div class="dropdown-menu" aria-labelledby="appDropdownMenuLink">
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newAppModal"
-                            onclick="initAppModal()">Create new</a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newOrRedeployAppModal"
+                            onclick="initAppModal('new')">Create new</a>
                         <div class="dropdown-divider"></div>
                         <div id="app-dropdown-list">
                             <!-- <a class="dropdown-item" href="#app-uuid">app-name</a> -->
@@ -109,8 +109,10 @@
                     <td id="appResponseStatus">Running</td>
                 </tr>
             </table>
+
             <div>
-                <button type="button" class="btn btn-primary" onclick="redeployAppOnclick()">Redeploy</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrRedeployAppModal"
+                    onclick="initAppModal('redeploy')">Redeploy</button>
                 <button type="button" class="btn btn-danger" onclick="deleteAppOnclick()">Delete</button>
             </div>
         </div>
@@ -150,11 +152,11 @@
     </div>
 
     <!-- app modal -->
-    <div id="newAppModal" class="modal" tabindex="-1" role="dialog">
+    <div id="newOrRedeployAppModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">New app</h5>
+                    <h5 class="modal-title" id="appModalTitle">App</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -205,7 +207,8 @@
                 </div>
                 <div class="modal-footer" id="appModalFooter">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="createAppOnclick()">Create</button>
+                    <button type="button" class="btn btn-primary" id="appModalActionButton"
+                        onclick="console.log('app modal action')">Create</button>
                 </div>
             </div>
         </div>

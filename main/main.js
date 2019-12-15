@@ -15,9 +15,15 @@ function formatDatabaseTypeName(databaseType) {
   }[databaseType]
 }
 
-function formatAppTypeName(databaseType) {
+function appTypeToAppTypeName(databaseType) {
   return {
     "NODEJS": "Node.js",
+  }[databaseType]
+}
+
+function appTypeNameToAppType(databaseType) {
+  return {
+    "Node.js": "NODEJS",
   }[databaseType]
 }
 
@@ -43,13 +49,13 @@ function fillDatastoreInfo(datastoreResponseDto) {
   setElementVisible("mainContentErrorMessage", false)
 }
 
-function createHtmlLink(href) {
-  return `<a href="${href}">${href}</a>`
+function createHtmlLink(linkElementId, href) {
+  return `<a href="${href}" id=${linkElementId}>${href}</a>`
 }
 
-function createHtmlLinkToGithubBranch(repoUrl, branch) {
+function createHtmlLinkToGithubBranch(linkElementId, repoUrl, branch) {
   const urlToBranch = repoUrl + "/tree/" + branch
-  return `<a href="${urlToBranch}">${branch}</a>`
+  return `<a href="${urlToBranch}" id=${linkElementId}>${branch}</a>`
 }
 
 function mapBooleanStringToCustomString(boolVal, trueMapping, falseMapping) {
@@ -60,17 +66,17 @@ function mapBooleanStringToCustomString(boolVal, trueMapping, falseMapping) {
 }
 
 function fillAppInfo(appResponseDto) {
-  setElementContent("appResponseName", "App " + appResponseDto.name)
+  setElementContent("appResponseName", appResponseDto.name)
   setElementContent("appResponseUuid", appResponseDto.appUuid)
-  setElementContent("appResponseType", formatAppTypeName(appResponseDto.type))
+  setElementContent("appResponseType", appTypeToAppTypeName(appResponseDto.type))
   setElementContent("appResponseCreatedAt", new Date(appResponseDto.createdAt).toLocaleString("PL"))
-  setElementContent("appResponseSourceRepoUrl", createHtmlLink(appResponseDto.sourceRepoUrl))
-  setElementContent("appResponseSourceBranchName", createHtmlLinkToGithubBranch(appResponseDto.sourceRepoUrl, appResponseDto.sourceBranchName))
+  setElementContent("appResponseSourceRepoUrl", createHtmlLink("sourceRepoUrlLink", appResponseDto.sourceRepoUrl))
+  setElementContent("appResponseSourceBranchName", createHtmlLinkToGithubBranch("sourceBranchName", appResponseDto.sourceRepoUrl, appResponseDto.sourceBranchName))
   setElementContent("appResponseSourceCommitHash", appResponseDto.commitHash)
   setElementContent("appResponseAutodeployEnabled", mapBooleanStringToCustomString(appResponseDto.autodeployEnabled, "enabled", "disabled"))
   setElementContent("appResponseStatus", appResponseDto.status)
 
-  const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}">${appResponseDto.datastoreUuid}</a>`
+  const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}" id='datastoreUuidLink'>${appResponseDto.datastoreUuid}</a>`
   setElementContent("appResponseDatastoreUuid", appResponseDto.datastoreUuid != null ? htmlLinkToDatastore : "none")
 
   setElementVisible("appContent", true)
@@ -121,11 +127,59 @@ function initDatastoreModal() {
   console.log("INIT DATASTORE")
 }
 
-function initAppModal() {
+function clearElementContent(elementId) {
+  setElementContent(elementId, "")
+}
+
+function getInnerHtml(elementId) {
+  return document.getElementById(elementId).innerHTML
+}
+
+function clearAppModalForm() {
+  clearElementContent("app-name")
+  clearElementContent("app-sourceRepoUrl")
+  clearElementContent("app-sourceBranchName")
+  clearElementContent("app-commitHash")
+  document.getElementById("app-autodeployEnabled").checked = false
+}
+
+function fillAppModalFormWithCurrentAppValues() {
+  document.getElementById("appModalActionButton").onclick = redeployAppOnclick
+  document.getElementById("app-name").value = getInnerHtml("appResponseName")
+  document.getElementById("app-type").value = appTypeNameToAppType(getInnerHtml("appResponseType"))
+  document.getElementById("app-sourceRepoUrl").value = getInnerHtml("sourceRepoUrlLink")
+  document.getElementById("app-sourceBranchName").value = getInnerHtml("sourceBranchName")
+  document.getElementById("app-autodeployEnabled").checked = getInnerHtml("appResponseAutodeployEnabled") == "enabled"
+  document.getElementById("app-commitHash").value = getInnerHtml("appResponseSourceCommitHash")
+
+  let datastoreUuid = "";
+  const datastoreLinkUuid = document.getElementById("datastoreUuidLink");
+  if (datastoreLinkUuid != null) {
+    datastoreUuid = datastoreLinkUuid.innerHTML
+  }
+  document.getElementById("app-datastoreUuid").value = datastoreUuid
+}
+
+function initAppModal(actionType) {
+  console.log("INIT APP")
+
   clearModalMessage("appModalMessage")
   setModalFooterButtonsDisabled("appModalFooter", false)
   setElementVisible("createAppModalSpinner", false)
-  console.log("INIT APP")
+
+  clearAppModalForm()
+
+  if (actionType == "new") {
+    setElementContent("appModalTitle", "New app")
+    setElementContent("appModalActionButton", "Create")
+    document.getElementById("appModalActionButton").onclick = createAppOnclick
+  }
+
+  if (actionType == "redeploy") {
+    setElementContent("appModalTitle", "Redeploy " + document.getElementById("appResponseName").innerHTML)
+    setElementContent("appModalActionButton", "Redeploy")
+    fillAppModalFormWithCurrentAppValues()
+  }
 }
 
 function createDatastoreOnclick() {
@@ -185,7 +239,11 @@ function showDatastoreModalErrorMessage(message) {
 }
 
 function showAppModalSuccessMessage(json) {
-  showModalSuccessMessage(json, "newAppModal", "appModalMessage", "App created!", "createAppModalSpinner")
+  showModalSuccessMessage(json, "newOrRedeployAppModal", "appModalMessage", "App created!", "createAppModalSpinner")
+}
+
+function showAppRedeployModalSuccessMessage(json) {
+  showModalSuccessMessage(json, "newOrRedeployAppModal", "appModalMessage", "App redeployed!", "createAppModalSpinner")
 }
 
 function showAppModalErrorMessage(message) {
@@ -238,8 +296,26 @@ function createAppOnclick() {
   postRequest(appUrl, createAppRequestBody(), showAppModalSuccessMessage, showAppModalErrorMessage)
 }
 
+function createAppOnclick() {
+  console.log("create app")
+
+  setElementVisible("createAppModalSpinner", true)
+  clearModalMessage("appModalMessage")
+  setModalFooterButtonsDisabled("appModalFooter", true)
+
+  postRequest(appUrl, createAppRequestBody(), showAppModalSuccessMessage, showAppModalErrorMessage)
+}
+
 function redeployAppOnclick() {
   console.log("redeploy app")
+  setElementVisible("createAppModalSpinner", true)
+  clearModalMessage("appModalMessage")
+  setModalFooterButtonsDisabled("appModalFooter", true)
+
+  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
+  const redeployUrl = appUrl + "/" + currentAppUuid + "/redeploy"
+
+  postRequest(redeployUrl, createAppRequestBody(), showAppRedeployModalSuccessMessage, showAppModalErrorMessage)
 }
 
 function deleteAppOnclick() {
