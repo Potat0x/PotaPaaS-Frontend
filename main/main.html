@@ -110,7 +110,7 @@
                 </tr>
             </table>
 
-            <div>
+            <div id="appContentButtons">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrRedeployAppModal"
                     onclick="initAppModal('redeploy')">Redeploy</button>
                 <button type="button" class="btn btn-danger" data-toggle="modal"
@@ -146,7 +146,7 @@
                     <!-- <li><a href="#">app-2</a></li> -->
                 </ul>
             </div>
-            <div>
+            <div id="datastoreContentButtons">
                 <button type="button" class="btn btn-danger" data-toggle="modal"
                     data-target="#deleting-confirmation-modal"
                     onclick="prepareConfirmationModalForDeletingDatastore()">Delete</button>
@@ -296,22 +296,35 @@
     <script src="main.js"></script>
     <script src="httpService.js"></script>
     <script>
-        initDatastoreDropdown()
-        initAppDropdown()
-        setElementVisible("datastoreContent", false)
-        const currentPageUrl = window.location.href;
-        console.log("window.location.href = " + currentPageUrl)
-        if (currentPageUrl.includes("#datastore=")) {
-            let pos = currentPageUrl.indexOf("#datastore=")
-            const datastoreUrl = currentPageUrl.substr(pos + "#datastore=".length);
-            console.log("datastoreUrl = " + datastoreUrl)
-            initDatastoreInfo(datastoreUrl)
-        } else if (currentPageUrl.includes("#app=")) {
-            let pos = currentPageUrl.indexOf("#app=")
-            const appUrl = currentPageUrl.substr(pos + "#app=".length);
-            console.log("appUrl = " + appUrl)
-            initAppInfo(appUrl)
+        function refreshPageContent() {
+            setElementVisible("appContent", false)
+            setElementVisible("datastoreContent", false)
+            setElementVisible("operationResultAlert", false)
+            setElementVisible("mainContentErrorMessage", false)
+
+            setButtonsInsideDivDisabled("appContentButtons", false)
+            setButtonsInsideDivDisabled("datastoreContentButtons", false)
+
+            initDatastoreDropdown()
+            initAppDropdown()
+
+            setMainContent()
         }
+
+        function setMainContent() {
+            const currentPageUrl = window.location.href;
+            if (currentPageUrl.includes("#datastore=")) {
+                let pos = currentPageUrl.indexOf("#datastore=")
+                const datastoreUrl = currentPageUrl.substr(pos + "#datastore=".length);
+                initDatastoreInfo(datastoreUrl)
+            } else if (currentPageUrl.includes("#app=")) {
+                let pos = currentPageUrl.indexOf("#app=")
+                const appUrl = currentPageUrl.substr(pos + "#app=".length);
+                initAppInfo(appUrl)
+            }
+        }
+
+        refreshPageContent()
     </script>
 </body>
 

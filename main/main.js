@@ -2,9 +2,9 @@ const mainUrl = "http://localhost:8080"
 const datastoreUrl = mainUrl + "/datastore"
 const appUrl = mainUrl + "/app"
 
-function updateWindowLocation(datastoreUuid) {
-  window.location.href = datastoreUuid
-  window.location.reload(false)
+function updateWindowLocationAndReload(href) {
+  window.location.href = href
+  refreshPageContent()
 }
 
 function formatDatabaseTypeName(databaseType) {
@@ -99,7 +99,7 @@ function initAppInfo(appUuid) {
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
   let dropdownListHtml = ""
   for (let item of items) {
-    dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="updateWindowLocation('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
+    dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="updateWindowLocationAndReload('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
   }
   document.getElementById(dropdownListId).innerHTML = dropdownListHtml
 }
@@ -122,7 +122,7 @@ function initAppDropdown() {
 
 function initDatastoreModal() {
   clearModalMessage("datastoreModalMessage")
-  setModalFooterButtonsDisabled("datastoreModalFooter", false)
+  setButtonsInsideDivDisabled("datastoreModalFooter", false)
   setElementVisible("createDatastoreModalSpinner", false)
   console.log("INIT DATASTORE")
 }
@@ -161,10 +161,8 @@ function fillAppModalFormWithCurrentAppValues() {
 }
 
 function initAppModal(actionType) {
-  console.log("INIT APP")
-
   clearModalMessage("appModalMessage")
-  setModalFooterButtonsDisabled("appModalFooter", false)
+  setButtonsInsideDivDisabled("appModalFooter", false)
   setElementVisible("createAppModalSpinner", false)
 
   clearAppModalForm()
@@ -183,13 +181,21 @@ function initAppModal(actionType) {
 }
 
 function createDatastoreOnclick() {
-  console.log("create datastore")
-
   setElementVisible("createDatastoreModalSpinner", true)
   clearModalMessage("datastoreModalMessage")
-  setModalFooterButtonsDisabled("datastoreModalFooter", true)
+  setButtonsInsideDivDisabled("datastoreModalFooter", true)
 
-  postRequest(datastoreUrl, createDatastoreRequestBody(), showDatastoreModalSuccessMessage, showDatastoreModalErrorMessage)
+  postRequest(datastoreUrl, createDatastoreRequestBody(), createDatastoreSuccessHandler, showDatastoreModalErrorMessage)
+}
+
+function createDatastoreSuccessHandler(json) {
+  showDatastoreModalSuccessMessage(json)
+  updateWindowLocationAndReload("#datastore=" + json.uuid)
+}
+
+function createAppSuccessHandler(json) {
+  showAppModalSuccessMessage(json)
+  updateWindowLocationAndReload("#app=" + json.appUuid)
 }
 
 function createDatastoreRequestBody() {
@@ -227,7 +233,7 @@ function showModalErrorMessage(message, messageId, spinnerId, footerId) {
   const formattedeMessage = message.replace(/\n/g, "<br>")
   setModalMessage(messageId, formattedeMessage, "error")
   setElementVisible(spinnerId, false)
-  setModalFooterButtonsDisabled(footerId, false)
+  setButtonsInsideDivDisabled(footerId, false)
 }
 
 function showDatastoreModalSuccessMessage(json) {
@@ -250,7 +256,7 @@ function showAppModalErrorMessage(message) {
   showModalErrorMessage(message, "appModalMessage", "createAppModalSpinner", "appModalFooter")
 }
 
-function setModalFooterButtonsDisabled(moodalFooterId, disabled) {
+function setButtonsInsideDivDisabled(moodalFooterId, disabled) {
   const footer = document.getElementById(moodalFooterId)
   const buttons = footer.getElementsByTagName("button")
   for (let button of buttons) {
@@ -287,26 +293,16 @@ function createAppOnclick() {
 
   setElementVisible("createAppModalSpinner", true)
   clearModalMessage("appModalMessage")
-  setModalFooterButtonsDisabled("appModalFooter", true)
+  setButtonsInsideDivDisabled("appModalFooter", true)
 
-  postRequest(appUrl, createAppRequestBody(), showAppModalSuccessMessage, showAppModalErrorMessage)
-}
-
-function createAppOnclick() {
-  console.log("create app")
-
-  setElementVisible("createAppModalSpinner", true)
-  clearModalMessage("appModalMessage")
-  setModalFooterButtonsDisabled("appModalFooter", true)
-
-  postRequest(appUrl, createAppRequestBody(), showAppModalSuccessMessage, showAppModalErrorMessage)
+  postRequest(appUrl, createAppRequestBody(), createAppSuccessHandler, showAppModalErrorMessage)
 }
 
 function redeployAppOnclick() {
   console.log("redeploy app")
   setElementVisible("createAppModalSpinner", true)
   clearModalMessage("appModalMessage")
-  setModalFooterButtonsDisabled("appModalFooter", true)
+  setButtonsInsideDivDisabled("appModalFooter", true)
 
   const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
   const redeployUrl = appUrl + "/" + currentAppUuid + "/redeploy"
@@ -351,14 +347,26 @@ function showAppDeleteErrorAlert(errorMessage) {
   showOperationResultAlert(errorMessage, "error")
 }
 
+function appDeleteSuccessHandler() {
+  setButtonsInsideDivDisabled("appContentButtons", true)
+  showAppDeleteSuccessAlert()
+  initAppDropdown()
+}
+
 function deleteAppOnclick() {
   const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
   const currentAppUrl = appUrl + "/" + currentAppUuid
-  deleteRequest(currentAppUrl, showAppDeleteSuccessAlert, showAppDeleteErrorAlert)
+  deleteRequest(currentAppUrl, appDeleteSuccessHandler, showAppDeleteErrorAlert)
 }
 
 function showDatastoreDeleteSuccessAlert() {
   showOperationResultAlert("Datastore deleted!", "success")
+}
+
+function datastoreDeleteSuccessHandler() {
+  setButtonsInsideDivDisabled("datastoreContentButtons", true)
+  showDatastoreDeleteSuccessAlert()
+  initDatastoreDropdown()
 }
 
 function showDatastoreDeleteErrorAlert(errorMessage) {
@@ -380,7 +388,7 @@ function prepareConfirmationModalForDeletingApp() {
 function deleteDatastoreOnclick() {
   const currentDatastoreUuid = document.getElementById("datastoreResponseUuid").innerHTML
   const currentDatastoreUrl = datastoreUrl + "/" + currentDatastoreUuid
-  deleteRequest(currentDatastoreUrl, showDatastoreDeleteSuccessAlert, showDatastoreDeleteErrorAlert)
+  deleteRequest(currentDatastoreUrl, datastoreDeleteSuccessHandler, showDatastoreDeleteErrorAlert)
 }
 
 function hideOperationResultAlert() {
