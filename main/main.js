@@ -365,6 +365,18 @@ function showDatastoreDeleteErrorAlert(errorMessage) {
   showOperationResultAlert(errorMessage, "error")
 }
 
+function setConfirmationModalAction(func) {
+  document.getElementById("deleting-confirmation-yes").onclick = func
+}
+
+function prepareConfirmationModalForDeletingDatastore() {
+  setConfirmationModalAction(deleteDatastoreOnclick)
+}
+
+function prepareConfirmationModalForDeletingApp() {
+  setConfirmationModalAction(deleteAppOnclick)
+}
+
 function deleteDatastoreOnclick() {
   const currentDatastoreUuid = document.getElementById("datastoreResponseUuid").innerHTML
   const currentDatastoreUrl = datastoreUrl + "/" + currentDatastoreUuid
