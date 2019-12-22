@@ -1,7 +1,11 @@
-const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMjEzIiwiZXhwIjoxNTc2NzI1MjU5fQ.SdNfUZcyaYErgn_1ADPro-7j8zU_wF9TLWe44sXR3UOuTHl_oJV6Xaw1IIHTHYoyuJ58t0xu_0YpvFL0RnZNfw"
+const authToken = ""
 
 function getRequest(url, onSuccess, onError) {
     request(url, "get", null, onSuccess, onError)
+}
+
+function deleteRequest(url, onSuccess, onError) {
+    request(url, "delete", null, onSuccess, onError)
 }
 
 function postRequest(url, requestBody, onSuccess, onError) {
@@ -12,7 +16,7 @@ function request(url, method, requestBody, onSuccess, onError) {
     return fetch(url, {
         method: method,
         body: requestBody,
-        mode: 'cors',
+        mode: "cors",
         headers: new Headers({
             "Authorization": authToken,
             "Content-Type": "application/json"
@@ -21,6 +25,8 @@ function request(url, method, requestBody, onSuccess, onError) {
         console.log("fetch response: " + response.status + JSON.stringify(response) + " for " + method + " " + url)
         if (response.status === 200 || response.status === 201) {
             return response.json()
+        } else if (response.status === 204) {
+            return Promise.resolve("");
         } else if (response.status === 401 || response.status === 403) {
             return Promise.reject("Auth error")
         } else if (response.status >= 400 && response.status < 500) {

@@ -152,8 +152,8 @@ function fillAppModalFormWithCurrentAppValues() {
   document.getElementById("app-autodeployEnabled").checked = getInnerHtml("appResponseAutodeployEnabled") == "enabled"
   document.getElementById("app-commitHash").value = getInnerHtml("appResponseSourceCommitHash")
 
-  let datastoreUuid = "";
-  const datastoreLinkUuid = document.getElementById("datastoreUuidLink");
+  let datastoreUuid = ""
+  const datastoreLinkUuid = document.getElementById("datastoreUuidLink")
   if (datastoreLinkUuid != null) {
     datastoreUuid = datastoreLinkUuid.innerHTML
   }
@@ -282,10 +282,6 @@ function setElementVisible(spinnerId, visible) {
   document.getElementById(spinnerId).style.display = visible ? "block" : "none"
 }
 
-function deleteDatastoreOnclick() {
-  console.log("delete datastore")
-}
-
 function createAppOnclick() {
   console.log("create app")
 
@@ -318,6 +314,63 @@ function redeployAppOnclick() {
   postRequest(redeployUrl, createAppRequestBody(), showAppRedeployModalSuccessMessage, showAppModalErrorMessage)
 }
 
+function addClassToElement(elementId, className) {
+  document.getElementById(elementId).classList.add(className)
+}
+
+function removeClassFromElement(elementId, className) {
+  document.getElementById(elementId).classList.remove(className)
+}
+
+function setOperationResultAlertStyle(style) {
+  if (style === "success") {
+    addClassToElement("operationResultAlert", "alert-success")
+    removeClassFromElement("operationResultAlert", "alert-danger")
+  } else if (style === "error") {
+    addClassToElement("operationResultAlert", "alert-danger")
+    removeClassFromElement("operationResultAlert", "alert-success")
+  } else {
+    addClassToElement("operationResultAlert", "alert-dark")
+    removeClassFromElement("operationResultAlert", "alert-danger")
+    removeClassFromElement("operationResultAlert", "alert-success")
+  }
+}
+
+function showOperationResultAlert(message, style) {
+  setElementContent("operationResultAlertMessage", message)
+  setOperationResultAlertStyle(style)
+
+  $("#operationResultAlert").show()
+}
+
+function showAppDeleteSuccessAlert() {
+  showOperationResultAlert("App deleted!", "success")
+}
+
+function showAppDeleteErrorAlert(errorMessage) {
+  showOperationResultAlert(errorMessage, "error")
+}
+
 function deleteAppOnclick() {
-  console.log("delete app")
+  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
+  const currentAppUrl = appUrl + "/" + currentAppUuid
+  deleteRequest(currentAppUrl, showAppDeleteSuccessAlert, showAppDeleteErrorAlert)
+}
+
+function showDatastoreDeleteSuccessAlert() {
+  showOperationResultAlert("Datastore deleted!", "success")
+}
+
+function showDatastoreDeleteErrorAlert(errorMessage) {
+  showOperationResultAlert(errorMessage, "error")
+}
+
+function deleteDatastoreOnclick() {
+  const currentDatastoreUuid = document.getElementById("datastoreResponseUuid").innerHTML
+  const currentDatastoreUrl = datastoreUrl + "/" + currentDatastoreUuid
+  deleteRequest(currentDatastoreUrl, showDatastoreDeleteSuccessAlert, showDatastoreDeleteErrorAlert)
+}
+
+function hideOperationResultAlert() {
+  setElementVisible("operationResultAlert", false)
 }
