@@ -2,6 +2,7 @@ const mainUrl = "http://localhost:8080"
 const datastoreUrl = mainUrl + "/datastore"
 const appUrl = mainUrl + "/app"
 const userUrl = mainUrl + "/user"
+const currentUsername = "user213"
 
 function updateWindowLocationAndReload(href) {
   window.location.href = href
@@ -70,7 +71,7 @@ function fillUserInfo(userResponseDto) {
   setElementContent("userResponseName", userResponseDto.username)
   setElementContent("userResponseEmail", userResponseDto.email)
   setElementContent("userResponseCreatedAt", new Date(userResponseDto.createdAt).toLocaleString("PL"))
-  
+
   setElementVisible("userContent", true)
   setElementVisible("mainContentErrorMessage", false)
 }
@@ -111,8 +112,7 @@ function initAppInfo(appUuid) {
 }
 
 function initUserInfo() {
-  const username = "user213"
-  getRequest(userUrl + "/" + username, fillUserInfo, refreshMainContentErrorMessage)
+  getRequest(userUrl + "/" + currentUsername, fillUserInfo, refreshMainContentErrorMessage)
 }
 
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
@@ -462,6 +462,17 @@ function initWebhookSecretModal() {
   clearModalMessage("webhookSecretModalMessage")
 }
 
+function clearInputElement(elementId) {
+  document.getElementById(elementId).value = ""
+}
+
+function initChangePasswordModal() {
+  clearModalMessage("changePasswordModalMessage")
+  clearInputElement("current-password")
+  clearInputElement("new-password")
+  clearInputElement("confirm-password")
+}
+
 function changeWebhookSecretOnclick() {
   const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
   postRequest(appUrl + "/" + currentAppUuid + "/change-webhook-secret", changeWebhookSecretRequestBody(), changeWebhookSecretSuccessHandler, showWebhookModalErrorMessage)
@@ -484,4 +495,32 @@ function showWebhookModalSuccessMessage(json) {
 
 function showWebhookModalErrorMessage(message) {
   showModalErrorMessage(message, "webhookSecretModalMessage")
+}
+
+function checkIfNewPasswordAndConfirmPasswordFieldsAreEquals() {
+  return document.getElementById("new-password").value === document.getElementById("confirm-password").value
+}
+
+function changePasswordOnclick() {
+  if (checkIfNewPasswordAndConfirmPasswordFieldsAreEquals()) {
+    const changePasswordUrl = userUrl + "/" + currentUsername + "/password"
+    postRequest(changePasswordUrl, changePasswordRequestBody(), showChangePasswordModalSuccessMessage, showChangePasswordModalErrorMessage)
+  } else {
+    showModalErrorMessage("Entered password are not the same", "changePasswordModalMessage")
+  }
+}
+
+function showChangePasswordModalSuccessMessage(json) {
+  showModalSuccessMessage(json, "changePasswordModal", "changePasswordModalMessage", "Password changed!")
+}
+
+function showChangePasswordModalErrorMessage(message) {
+  showModalErrorMessage(message, "changePasswordModalMessage")
+}
+
+function changePasswordRequestBody() {
+  return JSON.stringify({
+    currentPassword: document.getElementById("current-password").value,
+    newPassword: document.getElementById("new-password").value
+  })
 }

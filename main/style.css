@@ -20,6 +20,10 @@ body {
     margin-bottom: 8px;
 }
 
+#userProfileButtons {
+    margin-top: 10px;
+}
+
 #userTable {
     width: 50%;
 }
