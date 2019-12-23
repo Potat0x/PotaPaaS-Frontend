@@ -75,6 +75,7 @@ function fillAppInfo(appResponseDto) {
   setElementContent("appResponseSourceCommitHash", appResponseDto.commitHash)
   setElementContent("appResponseAutodeployEnabled", mapBooleanStringToCustomString(appResponseDto.autodeployEnabled, "enabled", "disabled"))
   setElementContent("appResponseStatus", appResponseDto.status)
+  document.getElementById("webhookSecretField").value = appResponseDto.webhookSecret
 
   const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}" id='datastoreUuidLink'>${appResponseDto.datastoreUuid}</a>`
   setElementContent("appResponseDatastoreUuid", appResponseDto.datastoreUuid != null ? htmlLinkToDatastore : "none")
@@ -410,4 +411,28 @@ function fillLogs(logs) {
 function refreshLogs() {
   const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
   getRequest(appUrl + "/" + currentAppUuid + "/logs", fillLogs, refreshMainContentErrorMessage)
+}
+
+function hideWebhookSecret() {
+  removeClassFromElement("webhookSecretVisibilityButton", "fa-eye")
+  addClassToElement("webhookSecretVisibilityButton", "fa-eye-slash")
+  setElementType("webhookSecretField", "password")
+}
+
+function revealWebhookSecret() {
+  addClassToElement("webhookSecretVisibilityButton", "fa-eye")
+  removeClassFromElement("webhookSecretVisibilityButton", "fa-eye-slash")
+  setElementType("webhookSecretField", "text")
+}
+
+function webhookSecretVisibilityButtonOnclick() {
+  if (document.getElementById("webhookSecretField").type === "password") {
+    revealWebhookSecret()
+  } else {
+    hideWebhookSecret()
+  }
+}
+
+function setElementType(elementId, type) {
+  document.getElementById(elementId).type = type
 }

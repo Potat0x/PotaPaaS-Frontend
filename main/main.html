@@ -109,6 +109,14 @@
                     <td>Status</td>
                     <td id="appResponseStatus">Running</td>
                 </tr>
+                <tr>
+                    <td>Webhook secret</td>
+                    <td id="appResponseStatus">
+                        <input id="webhookSecretField" type="password" name="pwd" readonly>
+                        <button type="button" id="webhookSecretVisibilityButton" class="btn fa fa-eye-slash disableButtonOutline"
+                            onclick="webhookSecretVisibilityButtonOnclick()">
+                    </td>
+                </tr>
             </table>
 
             <div id="appContentButtons">
@@ -124,7 +132,7 @@
             <div id="logsBox">
                 <h4 id="logsHeader">Logs</h4>
                 <div id="logsTextAndButtonBox">
-                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh" onclick="refreshLogs()">
+                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh disableButtonOutline" onclick="refreshLogs()">
                     </button>
                     <pre id="logsText"></pre>
                 </div>
@@ -327,6 +335,7 @@
 
             setButtonsInsideDivDisabled("appContentButtons", false)
             setButtonsInsideDivDisabled("datastoreContentButtons", false)
+            hideWebhookSecret()
         }
 
         function refreshMainContent() {
