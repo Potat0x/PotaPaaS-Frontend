@@ -1,6 +1,7 @@
 const mainUrl = "http://localhost:8080"
 const datastoreUrl = mainUrl + "/datastore"
 const appUrl = mainUrl + "/app"
+const userUrl = mainUrl + "/user"
 
 function updateWindowLocationAndReload(href) {
   window.location.href = href
@@ -65,6 +66,15 @@ function mapBooleanStringToCustomString(boolVal, trueMapping, falseMapping) {
   }[boolVal]
 }
 
+function fillUserInfo(userResponseDto) {
+  setElementContent("userResponseName", userResponseDto.username)
+  setElementContent("userResponseEmail", userResponseDto.email)
+  setElementContent("userResponseCreatedAt", new Date(userResponseDto.createdAt).toLocaleString("PL"))
+  
+  setElementVisible("userContent", true)
+  setElementVisible("mainContentErrorMessage", false)
+}
+
 function fillAppInfo(appResponseDto) {
   setElementContent("appResponseName", appResponseDto.name)
   setElementContent("appResponseUuid", appResponseDto.appUuid)
@@ -98,6 +108,11 @@ function initDatastoreInfo(datastoreUuid) {
 
 function initAppInfo(appUuid) {
   getRequest(appUrl + "/" + appUuid, fillAppInfo, refreshMainContentErrorMessage)
+}
+
+function initUserInfo() {
+  const username = "user213"
+  getRequest(userUrl + "/" + username, fillUserInfo, refreshMainContentErrorMessage)
 }
 
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {

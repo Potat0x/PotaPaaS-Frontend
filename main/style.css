@@ -20,6 +20,10 @@ body {
     margin-bottom: 8px;
 }
 
+#userTable {
+    width: 50%;
+}
+
 #noAttachedApps {
     color: rgb(71, 71, 71)
 }
