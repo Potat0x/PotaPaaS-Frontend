@@ -113,7 +113,8 @@
                     <td>Webhook secret</td>
                     <td id="appResponseStatus">
                         <input id="webhookSecretField" type="password" name="pwd" readonly>
-                        <button type="button" id="webhookSecretVisibilityButton" class="btn fa fa-eye-slash disableButtonOutline"
+                        <button type="button" id="webhookSecretVisibilityButton"
+                            class="btn fa fa-eye-slash disableButtonOutline"
                             onclick="webhookSecretVisibilityButtonOnclick()">
                     </td>
                 </tr>
@@ -122,6 +123,9 @@
             <div id="appContentButtons">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrRedeployAppModal"
                     onclick="initAppModal('redeploy')">Redeploy</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#changeWebhookSecretModal" onclick="initWebhookSecretModal()">Change webhook
+                    secret</button>
                 <button type="button" class="btn btn-danger" data-toggle="modal"
                     data-target="#deleting-confirmation-modal"
                     onclick="prepareConfirmationModalForDeletingApp()">Delete</button>
@@ -132,7 +136,8 @@
             <div id="logsBox">
                 <h4 id="logsHeader">Logs</h4>
                 <div id="logsTextAndButtonBox">
-                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh disableButtonOutline" onclick="refreshLogs()">
+                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh disableButtonOutline"
+                        onclick="refreshLogs()">
                     </button>
                     <pre id="logsText"></pre>
                 </div>
@@ -173,6 +178,36 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- webhook secret modal -->
+    <div id="changeWebhookSecretModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change webhook secret</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="webhook-secret" class="col-form-label">Secret</label>
+                            <input type="password" class="form-control" id="webhook-secret">
+                        </div>
+                    </form>
+                    <hr>
+                    <div class="modalMessage" id="webhookSecretModalMessage">
+                        text
+                    </div>
+                </div>
+                <div class="modal-footer" id="webhookSecretModalFooter">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="changeWebhookSecretOnclick()">Change</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- app modal -->

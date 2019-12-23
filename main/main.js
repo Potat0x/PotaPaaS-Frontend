@@ -228,16 +228,22 @@ function createAppRequestBody() {
 function showModalSuccessMessage(json, modalId, messageId, message, spinnerId) {
   console.log("showDatastoreSuccessMessage: " + json)
   setModalMessage(messageId, message, "success")
-  setElementVisible(spinnerId, false)
+  if (spinnerId != undefined) {
+    setElementVisible(spinnerId, false)
+  }
   setTimeout(() => $("#" + modalId).modal("hide"), 2000)
 }
 
 function showModalErrorMessage(message, messageId, spinnerId, footerId) {
-  console.log("onerrormsg datastore " + message)
+  console.log("onerrormsg datastore " + message + ", element = " + messageId)
   const formattedeMessage = message.replace(/\n/g, "<br>")
   setModalMessage(messageId, formattedeMessage, "error")
-  setElementVisible(spinnerId, false)
-  setButtonsInsideDivDisabled(footerId, false)
+  if (spinnerId != undefined) {
+    setElementVisible(spinnerId, false)
+  }
+  if (footerId != undefined) {
+    setButtonsInsideDivDisabled(footerId, false)
+  }
 }
 
 function showDatastoreModalSuccessMessage(json) {
@@ -435,4 +441,32 @@ function webhookSecretVisibilityButtonOnclick() {
 
 function setElementType(elementId, type) {
   document.getElementById(elementId).type = type
+}
+
+function initWebhookSecretModal() {
+  clearModalMessage("webhookSecretModalMessage")
+}
+
+function changeWebhookSecretOnclick() {
+  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
+  postRequest(appUrl + "/" + currentAppUuid + "/change-webhook-secret", changeWebhookSecretRequestBody(), changeWebhookSecretSuccessHandler, showWebhookModalErrorMessage)
+}
+
+function changeWebhookSecretRequestBody() {
+  return JSON.stringify({
+    secret: document.getElementById("webhook-secret").value
+  })
+}
+
+function changeWebhookSecretSuccessHandler(json) {
+  showWebhookModalSuccessMessage(json)
+  updateWindowLocationAndReload("#app=" + json.appUuid)
+}
+
+function showWebhookModalSuccessMessage(json) {
+  showModalSuccessMessage(json, "changeWebhookSecretModal", "webhookSecretModalMessage", "Secret changed!")
+}
+
+function showWebhookModalErrorMessage(message) {
+  showModalErrorMessage(message, "webhookSecretModalMessage")
 }
