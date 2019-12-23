@@ -4,7 +4,7 @@ const appUrl = mainUrl + "/app"
 
 function updateWindowLocationAndReload(href) {
   window.location.href = href
-  refreshPageContent()
+  refreshPage()
 }
 
 function formatDatabaseTypeName(databaseType) {
@@ -81,19 +81,22 @@ function fillAppInfo(appResponseDto) {
 
   setElementVisible("appContent", true)
   setElementVisible("mainContentErrorMessage", false)
+
+  console.log(appResponseDto.appUuid)
+  refreshLogs()
 }
 
-function setMainContentErrorMessage(message) {
+function refreshMainContentErrorMessage(message) {
   document.getElementById("mainContentErrorMessage").innerHTML = message
   setElementVisible("mainContentErrorMessage", true)
 }
 
 function initDatastoreInfo(datastoreUuid) {
-  getRequest(datastoreUrl + "/" + datastoreUuid, fillDatastoreInfo, setMainContentErrorMessage)
+  getRequest(datastoreUrl + "/" + datastoreUuid, fillDatastoreInfo, refreshMainContentErrorMessage)
 }
 
 function initAppInfo(appUuid) {
-  getRequest(appUrl + "/" + appUuid, fillAppInfo, setMainContentErrorMessage)
+  getRequest(appUrl + "/" + appUuid, fillAppInfo, refreshMainContentErrorMessage)
 }
 
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
@@ -307,7 +310,12 @@ function redeployAppOnclick() {
   const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
   const redeployUrl = appUrl + "/" + currentAppUuid + "/redeploy"
 
-  postRequest(redeployUrl, createAppRequestBody(), showAppRedeployModalSuccessMessage, showAppModalErrorMessage)
+  postRequest(redeployUrl, createAppRequestBody(), redeployAppSuccessHandler, showAppModalErrorMessage)
+}
+
+function redeployAppSuccessHandler(json) {
+  showAppRedeployModalSuccessMessage(json)
+  refreshMainContent()
 }
 
 function addClassToElement(elementId, className) {
@@ -393,4 +401,13 @@ function deleteDatastoreOnclick() {
 
 function hideOperationResultAlert() {
   setElementVisible("operationResultAlert", false)
+}
+
+function fillLogs(logs) {
+  setElementContent("logsText", logs.text)
+}
+
+function refreshLogs() {
+  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
+  getRequest(appUrl + "/" + currentAppUuid + "/logs", fillLogs, refreshMainContentErrorMessage)
 }

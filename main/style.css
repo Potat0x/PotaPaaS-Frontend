@@ -1,3 +1,7 @@
+body {
+    background: rgb(247, 247, 247);
+}
+
 #mainContent {
     margin: 14px;
 }
@@ -16,6 +20,43 @@
     margin-bottom: 8px;
 }
 
-#noAttachedApps{
+#noAttachedApps {
     color: rgb(71, 71, 71)
+}
+
+#logsRefreshButton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin-right: 18px;
+    margin-top: 8px;
+    outline: none;
+    font-size: 110%;
+    outline: none !important;
+    box-shadow: none;
+}
+
+#logsTextAndButtonBox {
+    position: relative;
+}
+
+#logsRefreshButton:active {
+    transform: rotate(45deg);
+}
+
+#logsText {
+    background: rgb(233, 233, 233);
+    border-radius: 3px;
+    padding-top: 3px;
+    padding-left: 7px;
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+#logsBox {
+    margin-top: 10px;
+}
+
+#logsHeader {
+    display: inline-block;
 }

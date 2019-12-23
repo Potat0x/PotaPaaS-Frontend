@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
     <title>PotaPaaS</title>
@@ -116,6 +117,17 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal"
                     data-target="#deleting-confirmation-modal"
                     onclick="prepareConfirmationModalForDeletingApp()">Delete</button>
+            </div>
+
+            <hr>
+
+            <div id="logsBox">
+                <h4 id="logsHeader">Logs</h4>
+                <div id="logsTextAndButtonBox">
+                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh" onclick="refreshLogs()">
+                    </button>
+                    <pre id="logsText"></pre>
+                </div>
             </div>
         </div>
 
@@ -296,7 +308,18 @@
     <script src="main.js"></script>
     <script src="httpService.js"></script>
     <script>
-        function refreshPageContent() {
+        function refreshPage() {
+            refreshElementsApperance()
+            refreshDropdownMenus()
+            refreshMainContent()
+        }
+
+        function refreshDropdownMenus() {
+            initDatastoreDropdown()
+            initAppDropdown()
+        }
+
+        function refreshElementsApperance() {
             setElementVisible("appContent", false)
             setElementVisible("datastoreContent", false)
             setElementVisible("operationResultAlert", false)
@@ -304,14 +327,9 @@
 
             setButtonsInsideDivDisabled("appContentButtons", false)
             setButtonsInsideDivDisabled("datastoreContentButtons", false)
-
-            initDatastoreDropdown()
-            initAppDropdown()
-
-            setMainContent()
         }
 
-        function setMainContent() {
+        function refreshMainContent() {
             const currentPageUrl = window.location.href;
             if (currentPageUrl.includes("#datastore=")) {
                 let pos = currentPageUrl.indexOf("#datastore=")
@@ -324,7 +342,7 @@
             }
         }
 
-        refreshPageContent()
+        refreshPage()
     </script>
 </body>
 
