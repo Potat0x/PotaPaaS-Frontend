@@ -14,400 +14,422 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar navbar-dark bg-dark">
-        <div class="navbar-brand">PotaPaaS</div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#user" onclick="updateWindowLocationAndReload('#user')">My account</a>
-                </li>
+    <div id="loginFormWrapper">
+        <div id="loginForm">
+            <h1>Log in to PotaPaaS</h1>
 
-                <!-- app -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="appDropdownMenuLink" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Apps
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="appDropdownMenuLink">
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newOrRedeployAppModal"
-                            onclick="initAppModal('new')">Create new</a>
-                        <div class="dropdown-divider"></div>
-                        <div id="app-dropdown-list">
-                            <!-- <a class="dropdown-item" href="#app-uuid">app-name</a> -->
-                        </div>
-                    </div>
-                </li>
+            <div class="w-25">
+                <input type="text" id="login-username" class="form-control" placeholder="Username">
+                <input type="password" id="login-password" class="form-control" placeholder="Password">
+                <button type="button" id="loginButton" class="btn btn-primary btn-block" onclick="logInOnclick()">Log in</button>
+            </div>
 
-                <!-- datastore -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="datastoreDropdownMenuLink" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Datastores
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="datastoreDropdownMenuLink">
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newDatastoreModal"
-                            onclick="initDatastoreModal()">Create new
+            <p id="loginFailedMessage"></p>
+        </div>
+    </div>
+
+    <div id="pageContent" style="display: none">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar navbar-dark bg-dark">
+            <div class="navbar-brand">PotaPaaS</div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#user" onclick="updateWindowLocationAndReload('#user')">My account</a>
+                    </li>
+
+                    <!-- app -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appDropdownMenuLink" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Apps
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <div id="datastore-dropdown-list">
-                            <!-- <a class="dropdown-item" href="#datastore-uuid">datastore-name</a> -->
+                        <div class="dropdown-menu" aria-labelledby="appDropdownMenuLink">
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newOrRedeployAppModal"
+                                onclick="initAppModal('new')">Create new</a>
+                            <div class="dropdown-divider"></div>
+                            <div id="app-dropdown-list">
+                                <!-- <a class="dropdown-item" href="#app-uuid">app-name</a> -->
+                            </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- content -->
-    <div id="mainContent">
-        <h2 id="mainContentErrorMessage">error message here</h2>
-
-        <div id="appContent">
-            <h2 id="appResponseName">my-app-123</h2>
-            <table id="appTable">
-                <tr>
-                    <th>UUID</th>
-                    <th id="appResponseUuid">123-f45f-67g8-39as-0d98d-7sg6g-5432</th>
-                </tr>
-                <tr>
-                    <td>Type</td>
-                    <td id="appResponseType">Node.js (NPM)</td>
-                </tr>
-                <tr>
-                    <td>Created at</td>
-                    <td id="appResponseCreatedAt">06.12.2019 21:11:19</td>
-                </tr>
-                <tr>
-                    <td>Repository URL</td>
-                    <td id="appResponseSourceRepoUrl">https://github.com/Potat0x/potapaas-test-cases</td>
-                </tr>
-                <tr>
-                    <td>Branch</td>
-                    <td id="appResponseSourceBranchName">nodejs-test-ok</td>
-                </tr>
-                <tr>
-                    <td>Commit</td>
-                    <td id="appResponseSourceCommitHash">b595a6712ecc533447fe5dfb01dfce0c73e293c6</td>
-                </tr>
-                <tr>
-                    <td>Autodeploy</td>
-                    <td id="appResponseAutodeployEnabled">enabled</td>
-                </tr>
-                <tr>
-                    <td>Datastore</td>
-                    <td id="appResponseDatastoreUuid">271e98127e98asdu8927rsdf</td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td id="appResponseStatus">Running</td>
-                </tr>
-                <tr>
-                    <td>Webhook secret</td>
-                    <td id="appResponseStatus">
-                        <input id="webhookSecretField" type="password" name="pwd" readonly>
-                        <button type="button" id="webhookSecretVisibilityButton"
-                            class="btn fa fa-eye-slash disableButtonOutline"
-                            onclick="webhookSecretVisibilityButtonOnclick()">
-                    </td>
-                </tr>
-            </table>
-
-            <div id="appContentButtons">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrRedeployAppModal"
-                    onclick="initAppModal('redeploy')">Redeploy</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#changeWebhookSecretModal" onclick="initWebhookSecretModal()">Change webhook
-                    secret</button>
-                <button type="button" class="btn btn-danger" data-toggle="modal"
-                    data-target="#deleting-confirmation-modal"
-                    onclick="prepareConfirmationModalForDeletingApp()">Delete</button>
-            </div>
-
-            <hr>
-
-            <div id="logsBox">
-                <h4 id="logsHeader">Logs</h4>
-                <div id="logsTextAndButtonBox">
-                    <button id="logsRefreshButton" type="button" class="btn fa fa-refresh disableButtonOutline"
-                        onclick="refreshLogs()">
-                    </button>
-                    <pre id="logsText"></pre>
-                </div>
-            </div>
-        </div>
-
-        <div id="datastoreContent">
-            <h2 id="datastoreResponseName">my-datastore-2</h2>
-            <table id="datastoreTable">
-                <tr>
-                    <th>UUID</th>
-                    <th id="datastoreResponseUuid">123-f45f-67g8-39as-0d98d-7sg6g-5432</th>
-                </tr>
-                <tr>
-                    <td>Type</td>
-                    <td id="datastoreResponseType">PostgreSQL</td>
-                </tr>
-                <tr>
-                    <td>Created at</td>
-                    <td id="datastoreResponseCreatedAt">06.12.2019 21:11:19</td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td id="datastoreResponseStatus">Running</td>
-                </tr>
-            </table>
-            <div>
-                Attached apps:
-                <p id="noAttachedApps">no attached apps.</p>
-                <ul id="datastoreResponseAttachedApps">
-                    <!-- <li><a href="#">app-2</a></li> -->
+                    <!-- datastore -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="datastoreDropdownMenuLink" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Datastores
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="datastoreDropdownMenuLink">
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newDatastoreModal"
+                                onclick="initDatastoreModal()">Create new
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <div id="datastore-dropdown-list">
+                                <!-- <a class="dropdown-item" href="#datastore-uuid">datastore-name</a> -->
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                    </li>
                 </ul>
             </div>
-            <div id="datastoreContentButtons">
-                <button type="button" class="btn btn-danger" data-toggle="modal"
-                    data-target="#deleting-confirmation-modal"
-                    onclick="prepareConfirmationModalForDeletingDatastore()">Delete</button>
-            </div>
-        </div>
+        </nav>
 
-        <div id="userContent">
-            <h2 id="userResponseName">user</h2>
-            <table id="userTable">
-                <tr>
-                    <td>Email</td>
-                    <td id="userResponseEmail">@</td>
-                </tr>
-                <tr>
-                    <td>Registered</td>
-                    <td id="userResponseCreatedAt">23.12.2019 21:11:19</td>
-                </tr>
-            </table>
+        <!-- content -->
+        <div id="mainContent">
+            <h2 id="mainContentErrorMessage">error message here</h2>
 
-            <div id="userProfileButtons">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal"
-                    onclick="initChangePasswordModal()">Change password</button>
-            </div>
-        </div>
-    </div>
+            <div id="appContent">
+                <h2 id="appResponseName">my-app-123</h2>
+                <table id="appTable">
+                    <tr>
+                        <th>UUID</th>
+                        <th id="appResponseUuid">123-f45f-67g8-39as-0d98d-7sg6g-5432</th>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td id="appResponseType">Node.js (NPM)</td>
+                    </tr>
+                    <tr>
+                        <td>Created at</td>
+                        <td id="appResponseCreatedAt">06.12.2019 21:11:19</td>
+                    </tr>
+                    <tr>
+                        <td>Repository URL</td>
+                        <td id="appResponseSourceRepoUrl">https://github.com/Potat0x/potapaas-test-cases</td>
+                    </tr>
+                    <tr>
+                        <td>Branch</td>
+                        <td id="appResponseSourceBranchName">nodejs-test-ok</td>
+                    </tr>
+                    <tr>
+                        <td>Commit</td>
+                        <td id="appResponseSourceCommitHash">b595a6712ecc533447fe5dfb01dfce0c73e293c6</td>
+                    </tr>
+                    <tr>
+                        <td>Autodeploy</td>
+                        <td id="appResponseAutodeployEnabled">enabled</td>
+                    </tr>
+                    <tr>
+                        <td>Datastore</td>
+                        <td id="appResponseDatastoreUuid">271e98127e98asdu8927rsdf</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td id="appResponseStatus">Running</td>
+                    </tr>
+                    <tr>
+                        <td>Webhook secret</td>
+                        <td id="appResponseStatus">
+                            <input id="webhookSecretField" type="password" name="pwd" readonly>
+                            <button type="button" id="webhookSecretVisibilityButton" class="btn fa fa-eye-slash disableButtonOutline"
+                                onclick="webhookSecretVisibilityButtonOnclick()">
+                        </td>
+                    </tr>
+                </table>
 
-    <!-- change password modal -->
-    <div id="changePasswordModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Change password</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div id="appContentButtons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrRedeployAppModal"
+                        onclick="initAppModal('redeploy')">Redeploy</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeWebhookSecretModal"
+                        onclick="initWebhookSecretModal()">Change webhook
+                        secret</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleting-confirmation-modal"
+                        onclick="prepareConfirmationModalForDeletingApp()">Delete</button>
                 </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="current-password" class="col-form-label">Current password</label>
-                            <input type="password" class="form-control" id="current-password">
-                            <label for="new-password" class="col-form-label">New password</label>
-                            <input type="password" class="form-control" id="new-password">
-                            <label for="confirm-password" class="col-form-label">Confirm password</label>
-                            <input type="password" class="form-control" id="confirm-password">
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="modalMessage" id="changePasswordModalMessage">
-                        text
+
+                <hr>
+
+                <div id="logsBox">
+                    <h4 id="logsHeader">Logs</h4>
+                    <div id="logsTextAndButtonBox">
+                        <button id="logsRefreshButton" type="button" class="btn fa fa-refresh disableButtonOutline" onclick="refreshLogs()">
+                        </button>
+                        <pre id="logsText"></pre>
                     </div>
                 </div>
-                <div class="modal-footer" id="changePasswordModalFooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="changePasswordOnclick()">Change</button>
+            </div>
+
+            <div id="datastoreContent">
+                <h2 id="datastoreResponseName">my-datastore-2</h2>
+                <table id="datastoreTable">
+                    <tr>
+                        <th>UUID</th>
+                        <th id="datastoreResponseUuid">123-f45f-67g8-39as-0d98d-7sg6g-5432</th>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td id="datastoreResponseType">PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>Created at</td>
+                        <td id="datastoreResponseCreatedAt">06.12.2019 21:11:19</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td id="datastoreResponseStatus">Running</td>
+                    </tr>
+                </table>
+                <div>
+                    Attached apps:
+                    <p id="noAttachedApps">no attached apps.</p>
+                    <ul id="datastoreResponseAttachedApps">
+                        <!-- <li><a href="#">app-2</a></li> -->
+                    </ul>
+                </div>
+                <div id="datastoreContentButtons">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleting-confirmation-modal"
+                        onclick="prepareConfirmationModalForDeletingDatastore()">Delete</button>
+                </div>
+            </div>
+
+            <div id="userContent">
+                <h2 id="userResponseName">user</h2>
+                <table id="userTable">
+                    <tr>
+                        <td>Email</td>
+                        <td id="userResponseEmail">@</td>
+                    </tr>
+                    <tr>
+                        <td>Registered</td>
+                        <td id="userResponseCreatedAt">23.12.2019 21:11:19</td>
+                    </tr>
+                </table>
+
+                <div id="userProfileButtons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal"
+                        onclick="initChangePasswordModal()">Change password</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- change password modal -->
+        <div id="changePasswordModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="current-password" class="col-form-label">Current password</label>
+                                <input type="password" class="form-control" id="current-password">
+                                <label for="new-password" class="col-form-label">New password</label>
+                                <input type="password" class="form-control" id="new-password">
+                                <label for="confirm-password" class="col-form-label">Confirm password</label>
+                                <input type="password" class="form-control" id="confirm-password">
+                            </div>
+                        </form>
+                        <hr>
+                        <div class="modalMessage" id="changePasswordModalMessage">
+                            text
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="changePasswordModalFooter">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="changePasswordOnclick()">Change</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- webhook secret modal -->
+        <div id="changeWebhookSecretModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change webhook secret</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="webhook-secret" class="col-form-label">Secret</label>
+                                <input type="password" class="form-control" id="webhook-secret">
+                            </div>
+                        </form>
+                        <hr>
+                        <div class="modalMessage" id="webhookSecretModalMessage">
+                            text
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="webhookSecretModalFooter">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="changeWebhookSecretOnclick()">Change</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- app modal -->
+        <div id="newOrRedeployAppModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="appModalTitle">App</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="app-name" class="col-form-label">Name</label>
+                                <input type="text" class="form-control" id="app-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="app-type">Type</label>
+                                <select class="form-control" id="app-type">
+                                    <option value=NODEJS>Node.js (NPM)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="app-sourceRepoUrl" class="col-form-label">URL to GitHub repository</label>
+                                <input type="text" class="form-control" id="app-sourceRepoUrl">
+                            </div>
+                            <div class="form-group">
+                                <label for="app-sourceBranchName" class="col-form-label">Branch</label>
+                                <input type="text" class="form-control" id="app-sourceBranchName">
+                            </div>
+                            <div class="form-group">
+                                <label for="app-commitHash" class="col-form-label">Commit hash (optional)</label>
+                                <input type="text" class="form-control" id="app-commitHash">
+                            </div>
+                            <div class="form-group">
+                                <label for="app-datastoreUuid" class="col-form-label">Datastore UUID (optional)</label>
+                                <input type="text" class="form-control" id="app-datastoreUuid">
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="app-autodeployEnabled">
+                                <label class="form-check-label" for="app-autodeployEnabled">
+                                    Enable autodeploy
+                                </label>
+                            </div>
+                        </form>
+                        <hr>
+                        <div class="modalMessage" id="appModalMessage">
+                            message
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status" id="createAppModalSpinner">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="appModalFooter">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="appModalActionButton"
+                            onclick="console.log('app modal action')">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- datastore modal -->
+        <div id="newDatastoreModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New datastore</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="datastore-name" class="col-form-label">Name</label>
+                                <input type="text" class="form-control" id="datastore-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="datastore-type">Type</label>
+                                <select class="form-control" id="datastore-type">
+                                    <option value="POSTGRESQL">PostgreSQL</option>
+                                    <option value="MYSQL">MySQL</option>
+                                    <option value="MARIADB">MariaDB</option>
+                                </select>
+                            </div>
+                        </form>
+                        <hr>
+                        <div class="modalMessage" id="datastoreModalMessage">
+                            text
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status" id="createDatastoreModalSpinner">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="datastoreModalFooter">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="createDatastoreOnclick()">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-dismissible fade show" role="alert" id="operationResultAlert" style="display: none">
+            <div id="operationResultAlertMessage">alert message</div>
+            <button type="button" class="close" onclick="hideOperationResultAlert()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="modal" tabindex="-1" role="dialog" id="deleting-confirmation-modal">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Are you sure?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="deleting-confirmation-yes">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- webhook secret modal -->
-    <div id="changeWebhookSecretModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Change webhook secret</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="webhook-secret" class="col-form-label">Secret</label>
-                            <input type="password" class="form-control" id="webhook-secret">
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="modalMessage" id="webhookSecretModalMessage">
-                        text
-                    </div>
-                </div>
-                <div class="modal-footer" id="webhookSecretModalFooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="changeWebhookSecretOnclick()">Change</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- app modal -->
-    <div id="newOrRedeployAppModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="appModalTitle">App</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="app-name" class="col-form-label">Name</label>
-                            <input type="text" class="form-control" id="app-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="app-type">Type</label>
-                            <select class="form-control" id="app-type">
-                                <option value=NODEJS>Node.js (NPM)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="app-sourceRepoUrl" class="col-form-label">URL to GitHub repository</label>
-                            <input type="text" class="form-control" id="app-sourceRepoUrl">
-                        </div>
-                        <div class="form-group">
-                            <label for="app-sourceBranchName" class="col-form-label">Branch</label>
-                            <input type="text" class="form-control" id="app-sourceBranchName">
-                        </div>
-                        <div class="form-group">
-                            <label for="app-commitHash" class="col-form-label">Commit hash (optional)</label>
-                            <input type="text" class="form-control" id="app-commitHash">
-                        </div>
-                        <div class="form-group">
-                            <label for="app-datastoreUuid" class="col-form-label">Datastore UUID (optional)</label>
-                            <input type="text" class="form-control" id="app-datastoreUuid">
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="app-autodeployEnabled">
-                            <label class="form-check-label" for="app-autodeployEnabled">
-                                Enable autodeploy
-                            </label>
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="modalMessage" id="appModalMessage">
-                        message
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status" id="createAppModalSpinner">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" id="appModalFooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="appModalActionButton"
-                        onclick="console.log('app modal action')">Create</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- datastore modal -->
-    <div id="newDatastoreModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">New datastore</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="datastore-name" class="col-form-label">Name</label>
-                            <input type="text" class="form-control" id="datastore-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="datastore-type">Type</label>
-                            <select class="form-control" id="datastore-type">
-                                <option value="POSTGRESQL">PostgreSQL</option>
-                                <option value="MYSQL">MySQL</option>
-                                <option value="MARIADB">MariaDB</option>
-                            </select>
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="modalMessage" id="datastoreModalMessage">
-                        text
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status" id="createDatastoreModalSpinner">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" id="datastoreModalFooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="createDatastoreOnclick()">Create</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="alert alert-dismissible fade show" role="alert" id="operationResultAlert" style="display: none">
-        <div id="operationResultAlertMessage">alert message</div>
-        <button type="button" class="close" onclick="hideOperationResultAlert()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <div class="modal" tabindex="-1" role="dialog" id="deleting-confirmation-modal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Are you sure?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"
-                        id="deleting-confirmation-yes">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="spaState.js"></script>
     <script src="main.js"></script>
     <script src="httpService.js"></script>
+
     <script>
-        function refreshPage() {
+        function showLoginScreen() {
+            setElementVisible("loginFormWrapper", true)
+            setElementVisible("loginFailedMessage", false)
+            setElementVisible("pageContent", false)
+        }
+
+        function showPageContent() {
             refreshElementsApperance()
             refreshDropdownMenus()
             refreshMainContent()
+        }
+
+        function refreshPage() {
+            showPageContentIfAuthorizedOrElseShowLoginScreen(showPageContent, showLoginScreen)
         }
 
         function refreshDropdownMenus() {
@@ -421,6 +443,8 @@
             setElementVisible("userContent", false)
             setElementVisible("operationResultAlert", false)
             setElementVisible("mainContentErrorMessage", false)
+            setElementVisible("loginFormWrapper", false)
+            setElementVisible("pageContent", true)
 
             setButtonsInsideDivDisabled("appContentButtons", false)
             setButtonsInsideDivDisabled("datastoreContentButtons", false)

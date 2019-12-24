@@ -2,7 +2,7 @@ const mainUrl = "http://localhost:8080"
 const datastoreUrl = mainUrl + "/datastore"
 const appUrl = mainUrl + "/app"
 const userUrl = mainUrl + "/user"
-const currentUsername = "user213"
+const loginUrl = mainUrl + "/login"
 
 function updateWindowLocationAndReload(href) {
   window.location.href = href
@@ -112,7 +112,7 @@ function initAppInfo(appUuid) {
 }
 
 function initUserInfo() {
-  getRequest(userUrl + "/" + currentUsername, fillUserInfo, refreshMainContentErrorMessage)
+  getRequest(userUrl + "/" + spaState.username, fillUserInfo, refreshMainContentErrorMessage)
 }
 
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
@@ -503,7 +503,7 @@ function checkIfNewPasswordAndConfirmPasswordFieldsAreEquals() {
 
 function changePasswordOnclick() {
   if (checkIfNewPasswordAndConfirmPasswordFieldsAreEquals()) {
-    const changePasswordUrl = userUrl + "/" + currentUsername + "/password"
+    const changePasswordUrl = userUrl + "/" + spaState.username + "/password"
     postRequest(changePasswordUrl, changePasswordRequestBody(), showChangePasswordModalSuccessMessage, showChangePasswordModalErrorMessage)
   } else {
     showModalErrorMessage("Entered password are not the same", "changePasswordModalMessage")
@@ -523,4 +523,29 @@ function changePasswordRequestBody() {
     currentPassword: document.getElementById("current-password").value,
     newPassword: document.getElementById("new-password").value
   })
+}
+
+function showPageContentIfAuthorizedOrElseShowLoginScreen(whenAuthorized, whenNotAuthorized) {
+  getRequest(userUrl + "/" + spaState.username, whenAuthorized, whenNotAuthorized)
+}
+
+function logInOnclick() {
+  const username = document.getElementById("login-username").value
+  const password = document.getElementById("login-password").value
+  loginRequest(loginUrl, username, password, loginSuccessHandler, loginErrorHandler)
+}
+
+function loginSuccessHandler(username, authToken) {
+  setUsernameAndToken(username, authToken)
+  refreshPage()
+}
+
+function loginErrorHandler(errorMessage) {
+  setElementContent("loginFailedMessage", errorMessage)
+  setElementVisible("loginFailedMessage", true)
+}
+
+function logout() {
+  destroySpaState()
+  refreshPage()
 }

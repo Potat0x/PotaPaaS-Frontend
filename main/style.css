@@ -71,3 +71,25 @@ body {
 #logsHeader {
     display: inline-block;
 }
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+}
+
+#loginButton {
+    margin-top: 5px;
+}
+
+#loginForm input {
+    margin-top: 2px;
+}
+
+#loginFailedMessage {
+    margin-top: 10px;
+    color: rgb(224, 34, 0);
+    display: none;
+}
