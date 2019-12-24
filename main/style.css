@@ -93,3 +93,11 @@ body {
     color: rgb(224, 34, 0);
     display: none;
 }
+
+.navbar-text-color li .nav-link {
+    color: rgb(209, 209, 209) !important;
+}
+
+#navbar-brand-text {
+    cursor: default;
+}

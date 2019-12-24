@@ -30,13 +30,13 @@
 
     <div id="pageContent" style="display: none">
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar navbar-dark bg-dark">
-            <div class="navbar-brand">PotaPaaS</div>
+            <div class="navbar-brand" id="navbar-brand-text">PotaPaaS</div>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav navbar-text-color">
                     <li class="nav-item">
                         <a class="nav-link" href="#user" onclick="updateWindowLocationAndReload('#user')">My account</a>
                     </li>
@@ -74,7 +74,7 @@
                         </div>
                     </li>
                 </ul>
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ml-auto navbar-text-color">
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="logout()">Logout</a>
                     </li>
@@ -258,7 +258,7 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="webhook-secret" class="col-form-label">Secret</label>
+                                <label for="webhook-secret" class="col-form-label">New secret</label>
                                 <input type="password" class="form-control" id="webhook-secret">
                             </div>
                         </form>

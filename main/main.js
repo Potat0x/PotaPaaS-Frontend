@@ -34,7 +34,7 @@ function setElementContent(elementId, innerHtml) {
 }
 
 function fillDatastoreInfo(datastoreResponseDto) {
-  setElementContent("datastoreResponseName", "Datastore " + datastoreResponseDto.name)
+  setElementContent("datastoreResponseName", datastoreResponseDto.name)
   setElementContent("datastoreResponseUuid", datastoreResponseDto.uuid)
   setElementContent("datastoreResponseType", formatDatabaseTypeName(datastoreResponseDto.type))
   setElementContent("datastoreResponseCreatedAt", new Date(datastoreResponseDto.createdAt).toLocaleString("PL"))
@@ -538,6 +538,7 @@ function logInOnclick() {
 function loginSuccessHandler(username, authToken) {
   setUsernameAndToken(username, authToken)
   refreshPage()
+  clearLoginForm()
 }
 
 function loginErrorHandler(errorMessage) {
@@ -548,4 +549,10 @@ function loginErrorHandler(errorMessage) {
 function logout() {
   destroySpaState()
   refreshPage()
+  clearLoginForm()
+}
+
+function clearLoginForm() {
+  document.getElementById("login-username").value = ""
+  document.getElementById("login-password").value = ""
 }
