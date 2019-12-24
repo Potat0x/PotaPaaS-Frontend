@@ -38,7 +38,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav navbar-text-color">
                     <li class="nav-item">
-                        <a class="nav-link" href="#user" onclick="updateWindowLocationAndReload('#user')">My account</a>
+                        <a class="nav-link" href="#user" onclick="setWindowLocation('#user')">My account</a>
                     </li>
 
                     <!-- app -->
@@ -452,21 +452,23 @@
         }
 
         function refreshMainContent() {
-            const currentPageUrl = window.location.href;
+            const currentPageUrl = window.location.href
             if (currentPageUrl.includes("#datastore=")) {
                 let pos = currentPageUrl.indexOf("#datastore=")
-                const datastoreUrl = currentPageUrl.substr(pos + "#datastore=".length);
+                const datastoreUrl = currentPageUrl.substr(pos + "#datastore=".length)
                 initDatastoreInfo(datastoreUrl)
             } else if (currentPageUrl.includes("#app=")) {
                 let pos = currentPageUrl.indexOf("#app=")
-                const appUrl = currentPageUrl.substr(pos + "#app=".length);
+                const appUrl = currentPageUrl.substr(pos + "#app=".length)
                 initAppInfo(appUrl)
             } else if (currentPageUrl.endsWith("#user")) {
                 initUserInfo()
             }
         }
 
-        refreshPage()
+        window.addEventListener("popstate", function (event) {
+            refreshPage()
+        })
     </script>
 </body>
 

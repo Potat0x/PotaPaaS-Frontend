@@ -4,9 +4,8 @@ const appUrl = mainUrl + "/app"
 const userUrl = mainUrl + "/user"
 const loginUrl = mainUrl + "/login"
 
-function updateWindowLocationAndReload(href) {
+function setWindowLocation(href) {
   window.location.href = href
-  refreshPage()
 }
 
 function formatDatabaseTypeName(databaseType) {
@@ -118,7 +117,7 @@ function initUserInfo() {
 function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
   let dropdownListHtml = ""
   for (let item of items) {
-    dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="updateWindowLocationAndReload('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
+    dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="setWindowLocation('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
   }
   document.getElementById(dropdownListId).innerHTML = dropdownListHtml
 }
@@ -209,12 +208,12 @@ function createDatastoreOnclick() {
 
 function createDatastoreSuccessHandler(json) {
   showDatastoreModalSuccessMessage(json)
-  updateWindowLocationAndReload("#datastore=" + json.uuid)
+  setWindowLocation("#datastore=" + json.uuid)
 }
 
 function createAppSuccessHandler(json) {
   showAppModalSuccessMessage(json)
-  updateWindowLocationAndReload("#app=" + json.appUuid)
+  setWindowLocation("#app=" + json.appUuid)
 }
 
 function createDatastoreRequestBody() {
@@ -486,7 +485,7 @@ function changeWebhookSecretRequestBody() {
 
 function changeWebhookSecretSuccessHandler(json) {
   showWebhookModalSuccessMessage(json)
-  updateWindowLocationAndReload("#app=" + json.appUuid)
+  setWindowLocation("#app=" + json.appUuid)
 }
 
 function showWebhookModalSuccessMessage(json) {
@@ -548,7 +547,6 @@ function loginErrorHandler(errorMessage) {
 
 function logout() {
   destroySpaState()
-  refreshPage()
   clearLoginForm()
 }
 
