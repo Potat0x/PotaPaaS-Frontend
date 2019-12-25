@@ -15,12 +15,12 @@ function getElementValue(elementId) {
 }
 
 function createHtmlLink(linkElementId, href) {
-    return `<a href="${href}" id=${linkElementId}>${href}</a>`
+    return `<a href="${href}" id=${linkElementId} target="_blank">${href}</a>`
 }
 
 function createHtmlLinkToGithubBranch(linkElementId, repoUrl, branch) {
     const urlToBranch = repoUrl + "/tree/" + branch
-    return `<a href="${urlToBranch}" id=${linkElementId}>${branch}</a>`
+    return `<a href="${urlToBranch}" id=${linkElementId} target="_blank">${branch}</a>`
 }
 
 function clearElementContent(elementId) {
