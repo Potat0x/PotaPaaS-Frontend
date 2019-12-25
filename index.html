@@ -90,6 +90,16 @@
         <div id="mainContent">
             <h2 id="mainContentErrorMessage">error message here</h2>
 
+            <div id="welcomeMessageBlockWrapper">
+                <div id="welcomeMessage">
+                    <h2>
+                        Welcome to PotaPaaS!
+                        <hr>
+                    </h2>
+                    <a href="https://github.com/Potat0x/PotaPaaS-Service" id="welcomeMessageGithubUrl">https://github.com/Potat0x/PotaPaaS-Service</a>
+                </div>
+            </div>
+
             <div id="appContent">
                 <h2 id="appResponseName">my-app-123</h2>
                 <table id="appTable">
@@ -454,6 +464,7 @@
             setElementVisible("mainContentErrorMessage", false)
             setElementVisible("loginFormWrapper", false)
             setElementVisible("pageContent", true)
+            setElementVisible("welcomeMessageBlockWrapper", false)
 
             setButtonsInsideDivDisabled("appContentButtons", false)
             setButtonsInsideDivDisabled("datastoreContentButtons", false)
@@ -472,6 +483,8 @@
                 initAppInfo(appUrl)
             } else if (currentPageUrl.endsWith("#user")) {
                 initUserInfo()
+            } else {
+                setElementVisible("welcomeMessageBlockWrapper", true)
             }
         }
 
