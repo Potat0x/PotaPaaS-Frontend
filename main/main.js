@@ -1,37 +1,3 @@
-const mainUrl = "http://localhost:8080"
-const datastoreUrl = mainUrl + "/datastore"
-const appUrl = mainUrl + "/app"
-const userUrl = mainUrl + "/user"
-const loginUrl = mainUrl + "/login"
-
-function setWindowLocation(href) {
-  window.location.href = href
-}
-
-function formatDatabaseTypeName(databaseType) {
-  return {
-    "POSTGRESQL": "PostgreSQL",
-    "MYSQL": "MySQL",
-    "MARIADB": "MariaDB"
-  }[databaseType]
-}
-
-function appTypeToAppTypeName(databaseType) {
-  return {
-    "NODEJS": "Node.js",
-  }[databaseType]
-}
-
-function appTypeNameToAppType(databaseType) {
-  return {
-    "Node.js": "NODEJS",
-  }[databaseType]
-}
-
-function setElementContent(elementId, innerHtml) {
-  document.getElementById(elementId).innerHTML = innerHtml
-}
-
 function fillDatastoreInfo(datastoreResponseDto) {
   setElementContent("datastoreResponseName", datastoreResponseDto.name)
   setElementContent("datastoreResponseUuid", datastoreResponseDto.uuid)
@@ -48,22 +14,6 @@ function fillDatastoreInfo(datastoreResponseDto) {
   setElementVisible("noAttachedApps", datastoreResponseDto.attachedApps.length == 0)
   setElementVisible("datastoreContent", true)
   setElementVisible("mainContentErrorMessage", false)
-}
-
-function createHtmlLink(linkElementId, href) {
-  return `<a href="${href}" id=${linkElementId}>${href}</a>`
-}
-
-function createHtmlLinkToGithubBranch(linkElementId, repoUrl, branch) {
-  const urlToBranch = repoUrl + "/tree/" + branch
-  return `<a href="${urlToBranch}" id=${linkElementId}>${branch}</a>`
-}
-
-function mapBooleanStringToCustomString(boolVal, trueMapping, falseMapping) {
-  return {
-    "true": trueMapping,
-    "false": falseMapping,
-  }[boolVal]
 }
 
 function fillUserInfo(userResponseDto) {
@@ -85,7 +35,7 @@ function fillAppInfo(appResponseDto) {
   setElementContent("appResponseSourceCommitHash", appResponseDto.commitHash)
   setElementContent("appResponseAutodeployEnabled", mapBooleanStringToCustomString(appResponseDto.autodeployEnabled, "enabled", "disabled"))
   setElementContent("appResponseStatus", appResponseDto.status)
-  document.getElementById("webhookSecretField").value = appResponseDto.webhookSecret
+  setElementValue("webhookSecretField", appResponseDto.webhookSecret)
 
   const htmlLinkToDatastore = `<a href="#datastore=${appResponseDto.datastoreUuid}" id='datastoreUuidLink'>${appResponseDto.datastoreUuid}</a>`
   setElementContent("appResponseDatastoreUuid", appResponseDto.datastoreUuid != null ? htmlLinkToDatastore : "none")
@@ -98,7 +48,7 @@ function fillAppInfo(appResponseDto) {
 }
 
 function refreshMainContentErrorMessage(message) {
-  document.getElementById("mainContentErrorMessage").innerHTML = message
+  setElementContent("mainContentErrorMessage", message)
   setElementVisible("mainContentErrorMessage", true)
 }
 
@@ -119,7 +69,7 @@ function setDropdownItemsInNavbar(hrefPrefix, dropdownListId, items) {
   for (let item of items) {
     dropdownListHtml += `<a class="dropdown-item" href="#${hrefPrefix}=${item.uuid}" onclick="setWindowLocation('#${hrefPrefix}=${item.uuid}')">${item.name}</a>\n`
   }
-  document.getElementById(dropdownListId).innerHTML = dropdownListHtml
+  setElementContent(dropdownListId, dropdownListHtml)
 }
 
 function setDatastoreDropdownItems(items) {
@@ -140,17 +90,9 @@ function initAppDropdown() {
 
 function initDatastoreModal() {
   clearModalMessage("datastoreModalMessage")
+  clearInputElement("datastore-name")
   setButtonsInsideDivDisabled("datastoreModalFooter", false)
   setElementVisible("createDatastoreModalSpinner", false)
-  console.log("INIT DATASTORE")
-}
-
-function clearElementContent(elementId) {
-  setElementContent(elementId, "")
-}
-
-function getInnerHtml(elementId) {
-  return document.getElementById(elementId).innerHTML
 }
 
 function clearAppModalForm() {
@@ -163,19 +105,14 @@ function clearAppModalForm() {
 
 function fillAppModalFormWithCurrentAppValues() {
   document.getElementById("appModalActionButton").onclick = redeployAppOnclick
-  document.getElementById("app-name").value = getInnerHtml("appResponseName")
-  document.getElementById("app-type").value = appTypeNameToAppType(getInnerHtml("appResponseType"))
-  document.getElementById("app-sourceRepoUrl").value = getInnerHtml("sourceRepoUrlLink")
-  document.getElementById("app-sourceBranchName").value = getInnerHtml("sourceBranchName")
+  setElementValue("app-name", getInnerHtml("appResponseName"))
+  setElementValue("app-type", appTypeNameToAppType(getInnerHtml("appResponseType")))
+  setElementValue("app-sourceRepoUrl", getInnerHtml("sourceRepoUrlLink"))
+  setElementValue("app-sourceBranchName", getInnerHtml("sourceBranchName"))
   document.getElementById("app-autodeployEnabled").checked = getInnerHtml("appResponseAutodeployEnabled") == "enabled"
-  document.getElementById("app-commitHash").value = getInnerHtml("appResponseSourceCommitHash")
-
-  let datastoreUuid = ""
-  const datastoreLinkUuid = document.getElementById("datastoreUuidLink")
-  if (datastoreLinkUuid != null) {
-    datastoreUuid = datastoreLinkUuid.innerHTML
-  }
-  document.getElementById("app-datastoreUuid").value = datastoreUuid
+  setElementValue("app-commitHash", getInnerHtml("appResponseSourceCommitHash"))
+  const datastoreUuid = document.getElementById("datastoreUuidLink") != null ? getInnerHtml("datastoreUuidLink") : ""
+  setElementValue("app-datastoreUuid", datastoreUuid)
 }
 
 function initAppModal(actionType) {
@@ -192,7 +129,7 @@ function initAppModal(actionType) {
   }
 
   if (actionType == "redeploy") {
-    setElementContent("appModalTitle", "Redeploy " + document.getElementById("appResponseName").innerHTML)
+    setElementContent("appModalTitle", "Redeploy " + getInnerHtml("appResponseName"))
     setElementContent("appModalActionButton", "Redeploy")
     fillAppModalFormWithCurrentAppValues()
   }
@@ -216,31 +153,7 @@ function createAppSuccessHandler(json) {
   setWindowLocation("#app=" + json.appUuid)
 }
 
-function createDatastoreRequestBody() {
-  return JSON.stringify({
-    name: document.getElementById("datastore-name").value,
-    type: document.getElementById("datastore-type").value
-  })
-}
-
-function nullIfEmpty(string) {
-  return string === "" ? null : string
-}
-
-function createAppRequestBody() {
-  return JSON.stringify({
-    name: document.getElementById("app-name").value,
-    type: document.getElementById("app-type").value,
-    sourceRepoUrl: document.getElementById("app-sourceRepoUrl").value,
-    sourceBranchName: document.getElementById("app-sourceBranchName").value,
-    autodeployEnabled: document.getElementById("app-autodeployEnabled").checked,
-    commitHash: nullIfEmpty(document.getElementById("app-commitHash").value),
-    datastoreUuid: nullIfEmpty(document.getElementById("app-datastoreUuid").value),
-  })
-}
-
 function showModalSuccessMessage(json, modalId, messageId, message, spinnerId) {
-  console.log("showDatastoreSuccessMessage: " + json)
   setModalMessage(messageId, message, "success")
   if (spinnerId != undefined) {
     setElementVisible(spinnerId, false)
@@ -280,18 +193,6 @@ function showAppModalErrorMessage(message) {
   showModalErrorMessage(message, "appModalMessage", "createAppModalSpinner", "appModalFooter")
 }
 
-function setButtonsInsideDivDisabled(moodalFooterId, disabled) {
-  const footer = document.getElementById(moodalFooterId)
-  const buttons = footer.getElementsByTagName("button")
-  for (let button of buttons) {
-    if (disabled) {
-      button.setAttribute("disabled", "disabled")
-    } else {
-      button.removeAttribute("disabled")
-    }
-  }
-}
-
 function setModalMessage(messageElementId, message, style) {
   const modalMessage = document.getElementById(messageElementId)
   if (style === "success") {
@@ -304,17 +205,7 @@ function setModalMessage(messageElementId, message, style) {
   modalMessage.innerHTML = message
 }
 
-function clearModalMessage(messageElementId) {
-  setModalMessage(messageElementId, "")
-}
-
-function setElementVisible(spinnerId, visible) {
-  document.getElementById(spinnerId).style.display = visible ? "block" : "none"
-}
-
 function createAppOnclick() {
-  console.log("create app")
-
   setElementVisible("createAppModalSpinner", true)
   clearModalMessage("appModalMessage")
   setButtonsInsideDivDisabled("appModalFooter", true)
@@ -323,28 +214,15 @@ function createAppOnclick() {
 }
 
 function redeployAppOnclick() {
-  console.log("redeploy app")
   setElementVisible("createAppModalSpinner", true)
   clearModalMessage("appModalMessage")
   setButtonsInsideDivDisabled("appModalFooter", true)
-
-  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
-  const redeployUrl = appUrl + "/" + currentAppUuid + "/redeploy"
-
-  postRequest(redeployUrl, createAppRequestBody(), redeployAppSuccessHandler, showAppModalErrorMessage)
+  postRequest(redeployUrl(getInnerHtml("appResponseUuid")), createAppRequestBody(), redeployAppSuccessHandler, showAppModalErrorMessage)
 }
 
 function redeployAppSuccessHandler(json) {
   showAppRedeployModalSuccessMessage(json)
   refreshMainContent()
-}
-
-function addClassToElement(elementId, className) {
-  document.getElementById(elementId).classList.add(className)
-}
-
-function removeClassFromElement(elementId, className) {
-  document.getElementById(elementId).classList.remove(className)
 }
 
 function setOperationResultAlertStyle(style) {
@@ -383,7 +261,7 @@ function appDeleteSuccessHandler() {
 }
 
 function deleteAppOnclick() {
-  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
+  const currentAppUuid = getInnerHtml("appResponseUuid")
   const currentAppUrl = appUrl + "/" + currentAppUuid
   deleteRequest(currentAppUrl, appDeleteSuccessHandler, showAppDeleteErrorAlert)
 }
@@ -415,8 +293,7 @@ function prepareConfirmationModalForDeletingApp() {
 }
 
 function deleteDatastoreOnclick() {
-  const currentDatastoreUuid = document.getElementById("datastoreResponseUuid").innerHTML
-  const currentDatastoreUrl = datastoreUrl + "/" + currentDatastoreUuid
+  const currentDatastoreUrl = datastoreUrl + "/" + getInnerHtml("datastoreResponseUuid")
   deleteRequest(currentDatastoreUrl, datastoreDeleteSuccessHandler, showDatastoreDeleteErrorAlert)
 }
 
@@ -429,8 +306,7 @@ function fillLogs(logs) {
 }
 
 function refreshLogs() {
-  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
-  getRequest(appUrl + "/" + currentAppUuid + "/logs", fillLogs, refreshMainContentErrorMessage)
+  getRequest(logsUrl(getInnerHtml("appResponseUuid")), fillLogs, refreshMainContentErrorMessage)
 }
 
 function hideWebhookSecret() {
@@ -453,16 +329,8 @@ function webhookSecretVisibilityButtonOnclick() {
   }
 }
 
-function setElementType(elementId, type) {
-  document.getElementById(elementId).type = type
-}
-
 function initWebhookSecretModal() {
   clearModalMessage("webhookSecretModalMessage")
-}
-
-function clearInputElement(elementId) {
-  document.getElementById(elementId).value = ""
 }
 
 function initChangePasswordModal() {
@@ -473,14 +341,7 @@ function initChangePasswordModal() {
 }
 
 function changeWebhookSecretOnclick() {
-  const currentAppUuid = document.getElementById("appResponseUuid").innerHTML
-  postRequest(appUrl + "/" + currentAppUuid + "/change-webhook-secret", changeWebhookSecretRequestBody(), changeWebhookSecretSuccessHandler, showWebhookModalErrorMessage)
-}
-
-function changeWebhookSecretRequestBody() {
-  return JSON.stringify({
-    secret: document.getElementById("webhook-secret").value
-  })
+  postRequest(changeWebhookSecretUrl(getInnerHtml("appResponseUuid")), changeWebhookSecretRequestBody(), changeWebhookSecretSuccessHandler, showWebhookModalErrorMessage)
 }
 
 function changeWebhookSecretSuccessHandler(json) {
@@ -497,13 +358,12 @@ function showWebhookModalErrorMessage(message) {
 }
 
 function checkIfNewPasswordAndConfirmPasswordFieldsAreEquals() {
-  return document.getElementById("new-password").value === document.getElementById("confirm-password").value
+  return getElementValue("new-password") === getElementValue("confirm-password")
 }
 
 function changePasswordOnclick() {
   if (checkIfNewPasswordAndConfirmPasswordFieldsAreEquals()) {
-    const changePasswordUrl = userUrl + "/" + spaState.username + "/password"
-    postRequest(changePasswordUrl, changePasswordRequestBody(), showChangePasswordModalSuccessMessage, showChangePasswordModalErrorMessage)
+    postRequest(changePasswordUrl(spaState.username), changePasswordRequestBody(), showChangePasswordModalSuccessMessage, showChangePasswordModalErrorMessage)
   } else {
     showModalErrorMessage("Entered password are not the same", "changePasswordModalMessage")
   }
@@ -517,20 +377,13 @@ function showChangePasswordModalErrorMessage(message) {
   showModalErrorMessage(message, "changePasswordModalMessage")
 }
 
-function changePasswordRequestBody() {
-  return JSON.stringify({
-    currentPassword: document.getElementById("current-password").value,
-    newPassword: document.getElementById("new-password").value
-  })
-}
-
 function showPageContentIfAuthorizedOrElseShowLoginScreen(whenAuthorized, whenNotAuthorized) {
   getRequest(userUrl + "/" + spaState.username, whenAuthorized, whenNotAuthorized)
 }
 
 function logInOnclick() {
-  const username = document.getElementById("login-username").value
-  const password = document.getElementById("login-password").value
+  const username = getElementValue("login-username")
+  const password = getElementValue("login-password")
   loginRequest(loginUrl, username, password, loginSuccessHandler, loginErrorHandler)
 }
 
@@ -551,34 +404,19 @@ function logout() {
 }
 
 function clearLoginForm() {
-  document.getElementById("login-username").value = ""
-  document.getElementById("login-password").value = ""
+  clearInputElement("login-username")
+  clearInputElement("login-password")
 }
 
 function refreshTokenExpirationTimeIndicator() {
   if (spaState.authToken != undefined) {
     const tokenExpirationTimeInSeconds = Math.round(jwt_decode(spaState.authToken).exp - Date.now() / 1000)
-    document.getElementById("tokenExpirationTime").innerHTML = "&#x21bb; " + formatSecondsToMinutesAndSeconds(tokenExpirationTimeInSeconds)
+    setElementContent("tokenExpirationTime", "&#x21bb; " + formatNonNegativeNumberOfSecondsToMinutesAndSeconds(tokenExpirationTimeInSeconds))
   }
-}
-
-function formatSecondsToMinutesAndSeconds(inputSeconds) {
-  let mins = Math.floor(inputSeconds / 60);
-  let secs = inputSeconds % 60;
-
-  if (mins >= 0 && secs >= 0) {
-    if (secs === 0) {
-      secs = "00"
-    } else if (secs < 10) {
-      secs = "0" + secs
-    }
-    return mins + ":" + secs;
-  }
-  return "0:00"
 }
 
 function refreshTokenOnclick() {
-  refreshTokenRequest(mainUrl + "/new-auth-token", refreshTokenSuccessHandler, showLoginScreen)
+  requestForNewToken(newAuthTokenUrl, refreshTokenSuccessHandler, showLoginScreen)
 }
 
 function refreshTokenSuccessHandler(newAuthToken) {

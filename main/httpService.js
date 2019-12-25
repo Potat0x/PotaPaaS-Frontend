@@ -79,14 +79,7 @@ function loginRequest(url, username, password, onSuccess, onError) {
     req.send(loginRequestBody(username, password))
 }
 
-function loginRequestBody(username, password) {
-    return JSON.stringify({
-        username: username,
-        password: password
-    })
-}
-
-function refreshTokenRequest(url, onSuccess, onError) {
+function requestForNewToken(url, onSuccess, onError) {
     const req = new XMLHttpRequest()
     req.open("GET", url, true)
     req.setRequestHeader("Authorization", spaState.authToken)
