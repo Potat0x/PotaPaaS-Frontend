@@ -101,3 +101,12 @@ body {
 #navbar-brand-text {
     cursor: default;
 }
+
+#tokenExpirationItem {
+    margin-right: 10px;
+}
+
+#tokenExpirationTime:hover{
+    color: rgb(199, 199, 199);
+    text-decoration: none;
+}

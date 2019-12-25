@@ -554,3 +554,34 @@ function clearLoginForm() {
   document.getElementById("login-username").value = ""
   document.getElementById("login-password").value = ""
 }
+
+function refreshTokenExpirationTimeIndicator() {
+  if (spaState.authToken != undefined) {
+    const tokenExpirationTimeInSeconds = Math.round(jwt_decode(spaState.authToken).exp - Date.now() / 1000)
+    document.getElementById("tokenExpirationTime").innerHTML = "&#x21bb; " + formatSecondsToMinutesAndSeconds(tokenExpirationTimeInSeconds)
+  }
+}
+
+function formatSecondsToMinutesAndSeconds(inputSeconds) {
+  let mins = Math.floor(inputSeconds / 60);
+  let secs = inputSeconds % 60;
+
+  if (mins >= 0 && secs >= 0) {
+    if (secs === 0) {
+      secs = "00"
+    } else if (secs < 10) {
+      secs = "0" + secs
+    }
+    return mins + ":" + secs;
+  }
+  return "0:00"
+}
+
+function refreshTokenOnclick() {
+  refreshTokenRequest(mainUrl + "/new-auth-token", refreshTokenSuccessHandler, showLoginScreen)
+}
+
+function refreshTokenSuccessHandler(newAuthToken) {
+  spaState.authToken = newAuthToken
+  refreshTokenExpirationTimeIndicator()
+}

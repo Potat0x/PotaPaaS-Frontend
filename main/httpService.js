@@ -85,3 +85,27 @@ function loginRequestBody(username, password) {
         password: password
     })
 }
+
+function refreshTokenRequest(url, onSuccess, onError) {
+    const req = new XMLHttpRequest()
+    req.open("GET", url, true)
+    req.setRequestHeader("Authorization", spaState.authToken)
+    req.onreadystatechange = function () {
+        if (req.readyState === 4) {
+            if (req.status === 200) {
+                const authHeader = req.getResponseHeader("authorization")
+                if (authHeader != undefined) {
+                    onSuccess(authHeader)
+                } else {
+                    console.log("Error: no auth header found in server response")
+                    onError()
+                }
+            } else if (req.status === 403) {
+                onError("Invalid username or password")
+            } else {
+                onError("Error: " + req.status)
+            }
+        }
+    }
+    req.send(null)
+}
