@@ -14,17 +14,17 @@
 </head>
 
 <body>
-    <div id="loginFormWrapper">
-        <div id="loginForm">
+    <div id="loginRegisterFormWrapper">
+        <div id="loginRegisterForm">
             <h1>Log in to PotaPaaS</h1>
-
             <div class="w-25">
                 <input type="text" id="login-username" class="form-control" placeholder="Username">
                 <input type="password" id="login-password" class="form-control" placeholder="Password">
-                <button type="button" id="loginButton" class="btn btn-primary btn-block" onclick="logInOnclick()">Log in</button>
+                <button type="button" id="loginRegisterButton" class="btn btn-primary btn-block" onclick="logInOnclick()">Log in</button>
             </div>
 
-            <p id="loginFailedMessage"></p>
+            <a href="/register.html" id="logInRegisterLink">Don't have account? Click here to register</a>
+            <p id="loginRegisterFailedMessage"></p>
         </div>
     </div>
 
@@ -437,8 +437,8 @@
 
     <script>
         function showLoginScreen() {
-            setElementVisible("loginFormWrapper", true)
-            setElementVisible("loginFailedMessage", false)
+            setElementVisible("loginRegisterFormWrapper", true)
+            setElementVisible("loginRegisterFailedMessage", false)
             setElementVisible("pageContent", false)
         }
 
@@ -463,7 +463,7 @@
             setElementVisible("userContent", false)
             setElementVisible("operationResultAlert", false)
             setElementVisible("mainContentErrorMessage", false)
-            setElementVisible("loginFormWrapper", false)
+            setElementVisible("loginRegisterFormWrapper", false)
             setElementVisible("pageContent", true)
             setElementVisible("welcomeMessageBlockWrapper", false)
 

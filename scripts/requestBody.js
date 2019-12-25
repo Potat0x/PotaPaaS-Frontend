@@ -36,3 +36,11 @@ function changePasswordRequestBody() {
         newPassword: getElementValue("new-password")
     })
 }
+
+function createUserRequestBody() {
+    return JSON.stringify({
+        email: getElementValue("register-email"),
+        username: getElementValue("register-username"),
+        password: getElementValue("register-password")
+    })
+}

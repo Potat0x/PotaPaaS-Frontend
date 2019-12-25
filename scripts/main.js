@@ -365,7 +365,7 @@ function changePasswordOnclick() {
   if (checkIfNewPasswordAndConfirmPasswordFieldsAreEquals()) {
     postRequest(changePasswordUrl(spaState.username), changePasswordRequestBody(), showChangePasswordModalSuccessMessage, showChangePasswordModalErrorMessage)
   } else {
-    showModalErrorMessage("Entered password are not the same", "changePasswordModalMessage")
+    showModalErrorMessage("Entered passwords are not the same", "changePasswordModalMessage")
   }
 }
 
@@ -394,8 +394,8 @@ function loginSuccessHandler(username, authToken) {
 }
 
 function loginErrorHandler(errorMessage) {
-  setElementContent("loginFailedMessage", errorMessage)
-  setElementVisible("loginFailedMessage", true)
+  setElementContent("loginRegisterFailedMessage", errorMessage)
+  setElementVisible("loginRegisterFailedMessage", true)
 }
 
 function logout() {

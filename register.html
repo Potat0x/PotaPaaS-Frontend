@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <title>PotaPaaS</title>
+</head>
+
+<body>
+    <div id="loginRegisterFormWrapper">
+        <div id="loginRegisterForm">
+            <h1>Create new account</h1>
+
+            <div class="w-25">
+                <input type="text" id="register-username" class="form-control" placeholder="Username">
+                <input type="text" id="register-email" class="form-control" placeholder="Email">
+                <input type="password" id="register-password" class="form-control" placeholder="Password">
+                <input type="password" id="register-confirm-password" class="form-control" placeholder="Confirm password">
+                <button type="button" id="loginRegisterButton" class="btn btn-primary btn-block" onclick="registerOnclick()">Register</button>
+            </div>
+
+            <a href="/" id="logInRegisterLink">Log in</a>
+            <div id="loginRegisterFailedMessage"></div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="account-created-modal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Account created</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" href="/" role="button">OK</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="scripts/spaState.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/requestBody.js"></script>
+    <script src="scripts/url.js"></script>
+    <script src="scripts/nameTransform.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/httpService.js"></script>
+    <script>
+
+        function registerOnclick() {
+            if (getElementValue("register-password") === getElementValue("register-confirm-password")) {
+                postRequest(userUrl, createUserRequestBody(), registerUserSuccessHandler, loginRegisterFailedMessage)
+            } else {
+                setElementVisible("loginRegisterFailedMessage", true)
+                setElementContent("loginRegisterFailedMessage", "Entered passwords are not the same")
+            }
+        }
+
+        function loginRegisterFailedMessage(message) {
+            setElementVisible("loginRegisterFailedMessage", true)
+            setElementContent("loginRegisterFailedMessage", message.replace(/\n/g, "<br>"))
+        }
+
+        function registerUserSuccessHandler() {
+            $("#account-created-modal").modal("show")
+        }
+    </script>
+</body>
+
+</html>
